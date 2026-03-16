@@ -1,15 +1,237 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"/>
     <body>
-        <div>TODO write content</div>
+        <header th:replace="~{general/fragmentos :: header}"/>
+        <section th:replace="~{general/fragmentos :: mostrarToast}"/>
+
+        <div class="container py-5">
+
+            <!-- Header de sección -->
+            <div class="wgk-sec-head">
+                <div>
+                    <h2 class="wgk-sec-title">Gestión de Marcas</h2>
+                    <p style="color:var(--smoke);font-size:0.75rem;letter-spacing:1px;margin-top:6px;">
+                        <span th:text="${totalMarcas}">0</span> marcas registradas
+                    </p>
+                </div>
+                <button class="wgk-btn-fire"
+                        data-bs-toggle="modal" data-bs-target="#modalNuevaMarca"
+                        style="cursor:pointer;">
+                    <i class="fas fa-plus"></i>Nueva Marca
+                </button>
+            </div>
+
+            <!-- Grid de marcas -->
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-5 g-4 mb-5"
+                 th:if="${marcas != null and !marcas.isEmpty()}">
+                <div class="col" th:each="m : ${marcas}">
+                    <div style="background:var(--ink2);border:1px solid var(--line);border-radius:4px;overflow:hidden;transition:border-color .25s,transform .25s;position:relative;"
+                         onmouseover="this.style.borderColor = 'var(--fire)';this.style.transform = 'translateY(-4px)'"
+                         onmouseout="this.style.borderColor = 'var(--line)';this.style.transform = 'translateY(0)'">
+
+                        <!-- Imagen -->
+                        <div style="overflow:hidden;height:120px;background:var(--ink3);">
+                            <img th:src="${m.rutaImagen != null ? m.rutaImagen :
+                                 'https://placehold.co/400x120/181818/2e2e2e?text=' + m.descripcion}"
+                                 style="width:100%;height:120px;object-fit:cover;display:block;transition:transform .4s;"
+                                 onmouseover="this.style.transform = 'scale(1.07)'"
+                                 onmouseout="this.style.transform = 'scale(1)'"
+                                 th:alt="${m.descripcion}"/>
+                        </div>
+
+                        <!-- Info -->
+                        <div style="padding:14px 16px 10px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                                <span style="font-family:var(--disp);font-size:1.1rem;letter-spacing:2px;text-transform:uppercase;color:var(--paper);"
+                                      th:text="${m.descripcion}">Marca</span>
+                                <span th:if="${m.activo}"
+                                      style="display:inline-flex;align-items:center;gap:4px;color:#4ade80;font-size:0.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">
+                                    <i class="fas fa-circle" style="font-size:.4rem;"></i>Activa
+                                </span>
+                                <span th:if="${!m.activo}"
+                                      style="display:inline-flex;align-items:center;gap:4px;color:var(--smoke);font-size:0.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">
+                                    <i class="fas fa-circle" style="font-size:.4rem;"></i>Inactiva
+                                </span>
+                            </div>
+
+                            <!-- Sneakers count si está disponible -->
+                            <p style="color:var(--smoke);font-size:0.7rem;margin-bottom:12px;"
+                               th:text="${m.sneakers != null ? m.sneakers.size() + ' sneakers' : '0 sneakers'}">
+                            </p>
+
+                            <!-- Acciones -->
+                            <div style="display:flex;gap:6px;">
+                                <a th:href="@{/marca/modificar/{id}(id=${m.idMarca})}"
+                                   class="wgk-btn-ghost"
+                                   style="padding:7px 14px;font-size:0.62rem;flex:1;justify-content:center;">
+                                    <i class="fas fa-edit"></i>Editar
+                                </a>
+                                <form method="post" th:action="@{/marca/eliminar}"
+                                      onsubmit="return confirm('¿Eliminar esta marca?')">
+                                    <input type="hidden" name="idMarca" th:value="${m.idMarca}"/>
+                                    <button type="submit" class="wgk-btn-fire"
+                                            style="padding:7px 12px;font-size:0.62rem;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty state -->
+            <div th:if="${marcas == null or marcas.isEmpty()}" class="wgk-empty">
+                <i class="fas fa-tag"></i>
+                <h5>No hay marcas registradas</h5>
+                <p>Agrega tu primera marca para empezar.</p>
+            </div>
+
+            <!-- Tabla resumen debajo -->
+            <div th:if="${marcas != null and !marcas.isEmpty()}">
+                <div class="wgk-sec-head" style="margin-top:20px;">
+                    <h3 class="wgk-sec-title" style="font-size:1.6rem;">Resumen</h3>
+                </div>
+                <div style="background:var(--ink2);border:1px solid var(--line);border-radius:4px;overflow:hidden;">
+                    <table class="wgk-table">
+                        <thead>
+                            <tr>
+                                <th style="width:70px;">Logo</th>
+                                <th>Marca</th>
+                                <th>Sneakers</th>
+                                <th>Estado</th>
+                                <th style="width:110px;text-align:center;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="m : ${marcas}">
+                                <td>
+                                    <img th:src="${m.rutaImagen != null ? m.rutaImagen :
+                                         'https://placehold.co/60x60/181818/2e2e2e?text=WGK'}"
+                                         width="54" height="54"
+                                         style="object-fit:cover;border-radius:3px;border:1px solid var(--line);display:block;"/>
+                                </td>
+                                <td>
+                                    <span style="font-family:var(--disp);font-size:1rem;letter-spacing:2px;text-transform:uppercase;color:var(--paper);"
+                                          th:text="${m.descripcion}">Marca</span>
+                                </td>
+                                <td>
+                                    <span style="color:var(--smoke);font-size:0.82rem;"
+                                          th:text="${m.sneakers != null ? m.sneakers.size() + ' modelos' : '0 modelos'}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <span th:if="${m.activo}"
+                                          style="display:inline-flex;align-items:center;gap:5px;color:#4ade80;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">
+                                        <i class="fas fa-circle" style="font-size:.45rem;"></i>Activa
+                                    </span>
+                                    <span th:if="${!m.activo}"
+                                          style="display:inline-flex;align-items:center;gap:5px;color:var(--smoke);font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">
+                                        <i class="fas fa-circle" style="font-size:.45rem;"></i>Inactiva
+                                    </span>
+                                </td>
+                                <td style="text-align:center;">
+                                    <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
+                                        <a th:href="@{/marca/modificar/{id}(id=${m.idMarca})}"
+                                           class="wgk-btn-ghost"
+                                           style="padding:7px 12px;font-size:0.62rem;">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="post" th:action="@{/marca/eliminar}"
+                                              onsubmit="return confirm('¿Eliminar esta marca?')">
+                                            <input type="hidden" name="idMarca" th:value="${m.idMarca}"/>
+                                            <button type="submit" class="wgk-btn-fire"
+                                                    style="padding:7px 12px;font-size:0.62rem;">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ═══ MODAL NUEVA MARCA ═══ -->
+        <div class="modal fade" id="modalNuevaMarca" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-tag me-2" style="color:var(--fire);"></i>Nueva Marca
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form method="post" th:action="@{/marca/guardar}" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <input type="hidden" name="idMarca" value=""/>
+                            <div class="mb-4">
+                                <label class="wgk-label">Nombre de la Marca</label>
+                                <input type="text" name="descripcion" class="wgk-input"
+                                       placeholder="Ej: Nike" required/>
+                            </div>
+                            <div class="mb-4">
+                                <label class="wgk-label">URL de imagen</label>
+                                <input type="text" name="rutaImagen" class="wgk-input"
+                                       placeholder="https://images.unsplash.com/..."
+                                       id="marcaUrlInput"/>
+                                <p class="wgk-hint">Pega la URL directa del logo o imagen de la marca.</p>
+                                <div id="marcaPreviewWrap" style="display:none;margin-top:10px;">
+                                    <img id="marcaPreview"
+                                         style="height:80px;border-radius:3px;border:1px solid var(--line);object-fit:cover;"/>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <!-- Campo requerido por el controller -->
+                                <input type="file" name="imagenFile" style="display:none;"/>
+                                <div class="d-flex align-items-center">
+                                    <input type="checkbox" name="activo" value="true"
+                                           id="activoMarca" checked/>
+                                    <label class="wgk-check-label" for="activoMarca">Activo</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="wgk-btn-ghost" data-bs-dismiss="modal">
+                                <i class="fas fa-times"></i>Cancelar
+                            </button>
+                            <button type="submit" class="wgk-btn">
+                                <i class="fas fa-save"></i>Guardar Marca
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const marcaInput = document.getElementById('marcaUrlInput');
+            const marcaWrap = document.getElementById('marcaPreviewWrap');
+            const marcaPrev = document.getElementById('marcaPreview');
+            if (marcaInput) {
+                marcaInput.addEventListener('input', function () {
+                    const val = this.value.trim();
+                    if (val) {
+                        marcaPrev.src = val;
+                        marcaWrap.style.display = 'block';
+                        marcaPrev.onerror = () => {
+                            marcaWrap.style.display = 'none';
+                        };
+                        marcaPrev.onload = () => {
+                            marcaWrap.style.display = 'block';
+                        };
+                    } else {
+                        marcaWrap.style.display = 'none';
+                    }
+                });
+            }
+        </script>
+
+        <footer th:replace="~{general/fragmentos :: footer}"/>
     </body>
 </html>

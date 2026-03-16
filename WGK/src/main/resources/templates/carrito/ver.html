@@ -4,105 +4,124 @@
     <head th:replace="~{general/fragmentos :: head}"/>
     <body>
         <header th:replace="~{general/fragmentos :: header}"/>
-        <div class="container py-5">
-            <h2 class="section-title mb-5">Mis Pedidos</h2>
+        <section th:replace="~{general/fragmentos :: mostrarToast}"/>
 
-            <div th:if="${carrito == null or carrito.isEmpty()}"
-                 class="text-center py-5">
-                <i class="fas fa-shopping-bag fa-4x text-muted mb-3"></i>
-                <h5 class="fw-bold">Tu carrito está vacío</h5>
-                <p class="text-muted">Todavía no has agregado ningún sneaker</p>
-                <a th:href="@{/}" class="btn btn-wgk mt-2">
-                    <i class="fas fa-shoe-prints me-2"></i>Ver Catálogo
+        <div class="container py-5">
+            <div class="wgk-sec-head">
+                <h2 class="wgk-sec-title">Mi Carrito</h2>
+            </div>
+
+            <!-- Vacío -->
+            <div th:if="${carrito == null or carrito.isEmpty()}" class="wgk-empty">
+                <i class="fas fa-shopping-bag"></i>
+                <h5>Tu carrito está vacío</h5>
+                <p class="mb-4">Todavía no has agregado ningún sneaker</p>
+                <a th:href="@{/}" class="wgk-btn" style="text-decoration:none;">
+                    <i class="fas fa-shoe-prints"></i>Ver Catálogo
                 </a>
             </div>
 
+            <!-- Con productos -->
             <div th:if="${carrito != null and !carrito.isEmpty()}">
-                <div class="row">
+                <div class="row g-4">
+
+                    <!-- Tabla -->
                     <div class="col-lg-8">
-                        <table class="table cart-table">
-                            <thead>
-                                <tr>
-                                    <th>Imagen</th>
-                                    <th>Nombre Producto</th>
-                                    <th>Descripción</th>
-                                    <th>Cantidad</th>
-                                    <th>Eliminar</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="s, iter : ${carrito}">
-                                    <td>
-                                        <img th:src="${s.rutaImagen != null ? s.rutaImagen :
-                                             'https://placehold.co/80x80/f8f8f8/111?text=WGK'}"
-                                             width="70" height="70"
-                                             style="object-fit:cover; border-radius:4px;"/>
-                                    </td>
-                                    <td class="fw-bold align-middle"
-                                        th:text="${s.descripcion}">Nombre</td>
-                                    <td class="text-muted align-middle small"
-                                        th:text="${s.marca != null ? s.marca.descripcion : ''}">
-                                        Marca
-                                    </td>
-                                    <td class="align-middle">
-                                        <span class="badge bg-dark">1</span>
-                                    </td>
-                                    <td class="align-middle">
-                                        <form method="post"
-                                              th:action="@{/carrito/eliminar/{i}(i=${iter.index})}">
-                                            <button class="btn btn-wgk-red btn-sm">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div style="background:var(--ink2);border:1px solid var(--line);border-radius:4px;overflow:hidden;">
+                            <table class="wgk-table">
+                                <thead>
+                                    <tr>
+                                        <th>Imagen</th>
+                                        <th>Producto</th>
+                                        <th>Marca</th>
+                                        <th>Cant.</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="s, iter : ${carrito}">
+                                        <td>
+                                            <img th:src="${s.rutaImagen != null ? s.rutaImagen :
+                                                 'https://placehold.co/72x72/181818/2e2e2e?text=WGK'}"
+                                                 width="72" height="72"
+                                                 style="object-fit:cover;border-radius:3px;border:1px solid var(--line);display:block;"/>
+                                        </td>
+                                        <td>
+                                            <div style="font-family:var(--disp);font-size:1rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--paper);"
+                                                 th:text="${s.descripcion}">Nombre</div>
+                                            <div style="color:var(--smoke);font-size:0.75rem;margin-top:3px;"
+                                                 th:text="'$' + ${#numbers.formatDecimal(s.precio, 1, 'COMMA', 2, 'POINT')}">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="wgk-badge-brand"
+                                                  th:text="${s.marca != null ? s.marca.descripcion : '—'}">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span style="font-family:var(--disp);font-size:1.4rem;color:var(--fire);">1</span>
+                                        </td>
+                                        <td>
+                                            <form method="post"
+                                                  th:action="@{/carrito/eliminar/{i}(i=${iter.index})}">
+                                                <button class="wgk-btn-fire"
+                                                        style="padding:8px 12px;font-size:0.65rem;" type="submit">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
+                    <!-- Resumen -->
                     <div class="col-lg-4">
-                        <div class="cart-total-box">
-                            <h5 class="fw-900 text-uppercase mb-3"
-                                style="font-weight:900; letter-spacing:1px;">
-                                Resumen
-                            </h5>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted small">Subtotal</span>
-                                <span class="fw-bold"
-                                      th:text="'$' + ${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}">
+                        <div class="wgk-cart-summary">
+                            <div class="wgk-cart-title">Resumen</div>
+
+                            <div class="wgk-cart-row">
+                                <span>Subtotal</span>
+                                <span th:text="'$' + ${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}">$0</span>
+                            </div>
+                            <div class="wgk-cart-row">
+                                <span>Envío</span>
+                                <span style="color:#4ade80;font-weight:700;">Gratis</span>
+                            </div>
+
+                            <hr class="wgk-hr"/>
+
+                            <div style="margin-bottom:20px;">
+                                <div style="color:var(--smoke);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">
+                                    Total
+                                </div>
+                                <div class="wgk-cart-total"
+                                     th:text="'$' + ${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}">
                                     $0
-                                </span>
+                                </div>
                             </div>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span class="text-muted small">Envío</span>
-                                <span class="fw-bold text-success">Gratis</span>
-                            </div>
-                            <hr/>
-                            <div class="d-flex justify-content-between mb-4">
-                                <span class="fw-bold text-uppercase">Total</span>
-                                <span class="cart-total-price"
-                                      th:text="'$' + ${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}">
-                                    $0
-                                </span>
-                            </div>
+
                             <div class="d-grid gap-2">
-                                <button class="btn btn-wgk py-2">
-                                    <i class="fas fa-credit-card me-2"></i>PAGAR
+                                <button class="wgk-btn justify-content-center" style="width:100%;padding:13px;">
+                                    <i class="fas fa-credit-card"></i>Pagar Ahora
                                 </button>
                                 <form method="post" th:action="@{/carrito/vaciar}">
-                                    <button class="btn btn-wgk-outline w-100">
-                                        <i class="fas fa-trash-alt me-2"></i>Vaciar
+                                    <button class="wgk-btn-ghost justify-content-center w-100" style="padding:11px;" type="submit">
+                                        <i class="fas fa-trash-alt"></i>Vaciar carrito
                                     </button>
                                 </form>
-                                <a th:href="@{/}" class="btn btn-wgk-outline">
-                                    <i class="fas fa-arrow-left me-2"></i>Seguir comprando
+                                <a th:href="@{/}" class="wgk-btn-ghost justify-content-center" style="padding:11px;">
+                                    <i class="fas fa-arrow-left"></i>Seguir comprando
                                 </a>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
+
         <footer th:replace="~{general/fragmentos :: footer}"/>
     </body>
 </html>

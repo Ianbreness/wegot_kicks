@@ -4,54 +4,52 @@
     <head th:replace="~{general/fragmentos :: head}"/>
     <body>
         <header th:replace="~{general/fragmentos :: header}"/>
+        <section th:replace="~{general/fragmentos :: mostrarToast}"/>
+
         <div class="container py-5">
             <div class="row justify-content-center">
                 <div class="col-md-6">
-                    <div class="card border-0 shadow-sm" style="border-radius:8px;">
-                        <div class="card-header modal-header-wgk py-3">
-                            <h5 class="mb-0 fw-bold text-uppercase text-white">
-                                <i class="fas fa-edit me-2"></i>Editar Marca
-                            </h5>
+                    <div class="wgk-panel">
+                        <div class="wgk-panel-head">
+                            <i class="fas fa-tag wgk-panel-icon"></i>
+                            <h5 th:text="${marca.idMarca != null ? 'Editar Marca' : 'Nueva Marca'}">Marca</h5>
                         </div>
-                        <form method="post" th:action="@{/marca/guardar}"
-                              enctype="multipart/form-data">
-                            <div class="card-body p-4">
-                                <input type="hidden" name="idMarca"
-                                       th:value="${marca.idMarca}"/>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold small text-uppercase">
-                                        Descripción
-                                    </label>
-                                    <input type="text" name="descripcion"
-                                           class="form-control form-control-wgk"
-                                           th:value="${marca.descripcion}" required/>
+
+                        <form method="post" th:action="@{/marca/guardar}" enctype="multipart/form-data">
+                            <div class="wgk-panel-body">
+                                <input type="hidden" name="idMarca" th:value="${marca.idMarca}"/>
+
+                                <div class="mb-4">
+                                    <label class="wgk-label">Nombre de la Marca</label>
+                                    <input type="text" name="descripcion" class="wgk-input"
+                                           th:value="${marca.descripcion}"
+                                           placeholder="Ej: Nike" required/>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold small text-uppercase">
-                                        Imagen actual
-                                    </label>
-                                    <img th:src="${marca.rutaImagen != null ? marca.rutaImagen :
-                                         'https://placehold.co/200x100/f8f8f8/111?text=WGK'}"
-                                         height="80" class="d-block mb-2 rounded"/>
-                                    <input type="file" name="imagenFile"
-                                           class="form-control form-control-wgk"
-                                           accept="image/*"/>
+
+                                <div class="mb-4">
+                                    <label class="wgk-label">URL de imagen</label>
+                                    <input type="text" name="rutaImagen" class="wgk-input"
+                                           th:value="${marca.rutaImagen}"
+                                           placeholder="https://images.unsplash.com/..."/>
+                                    <p class="wgk-hint">Pega la URL directa del logo o imagen de la marca.</p>
+                                    <div th:if="${marca.rutaImagen != null}" style="margin-top:10px;">
+                                        <img th:src="${marca.rutaImagen}"
+                                             style="height:80px;border-radius:3px;border:1px solid var(--line);object-fit:cover;"/>
+                                    </div>
                                 </div>
-                                <div class="form-check">
-                                    <input type="checkbox" name="activo" value="true"
-                                           class="form-check-input"
+
+                                <div class="d-flex align-items-center">
+                                    <input type="checkbox" name="activo" value="true" id="activoCheck"
                                            th:checked="${marca.activo}"/>
-                                    <label class="form-check-label fw-bold small text-uppercase">
-                                        Activo
-                                    </label>
+                                    <label class="wgk-check-label" for="activoCheck">Activo</label>
                                 </div>
                             </div>
-                            <div class="card-footer bg-white border-0 d-flex
-                                 justify-content-between p-4">
-                                <a th:href="@{/marca/listado}"
-                                   class="btn btn-wgk-outline">Cancelar</a>
-                                <button type="submit" class="btn btn-wgk">
-                                    <i class="fas fa-save me-1"></i>Guardar
+                            <div class="wgk-panel-foot">
+                                <a th:href="@{/marca/listado}" class="wgk-btn-ghost">
+                                    <i class="fas fa-arrow-left"></i>Cancelar
+                                </a>
+                                <button type="submit" class="wgk-btn">
+                                    <i class="fas fa-save"></i>Guardar Marca
                                 </button>
                             </div>
                         </form>
@@ -59,6 +57,7 @@
                 </div>
             </div>
         </div>
+
         <footer th:replace="~{general/fragmentos :: footer}"/>
     </body>
 </html>

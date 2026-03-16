@@ -4,105 +4,88 @@
     <head th:replace="~{general/fragmentos :: head}"/>
     <body>
         <header th:replace="~{general/fragmentos :: header}"/>
+        <section th:replace="~{general/fragmentos :: mostrarToast}"/>
+
         <div class="container py-5">
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <div class="card border-0 shadow-sm" style="border-radius:8px;">
-                        <div class="card-header modal-header-wgk py-3">
-                            <h5 class="mb-0 fw-bold text-uppercase text-white">
-                                <i class="fas fa-edit me-2"></i>Editar Sneaker
+                    <div class="wgk-panel">
+                        <div class="wgk-panel-head">
+                            <i class="fas fa-edit wgk-panel-icon"></i>
+                            <h5 th:text="${sneaker.idSneaker != null ? 'Editar Sneaker' : 'Nuevo Sneaker'}">
+                                Sneaker
                             </h5>
                         </div>
-                        <form method="post" th:action="@{/sneaker/guardar}"
-                              enctype="multipart/form-data">
-                            <div class="card-body p-4">
-                                <input type="hidden" name="idSneaker"
-                                       th:value="${sneaker.idSneaker}"/>
-                                <div class="row g-3">
+
+                        <form method="post" th:action="@{/sneaker/guardar}" enctype="multipart/form-data">
+                            <div class="wgk-panel-body">
+                                <input type="hidden" name="idSneaker" th:value="${sneaker.idSneaker}"/>
+
+                                <div class="row g-4">
                                     <div class="col-md-6">
-                                        <label class="form-label fw-bold small text-uppercase">
-                                            Nombre
-                                        </label>
-                                        <input type="text" name="descripcion"
-                                               class="form-control form-control-wgk"
-                                               th:value="${sneaker.descripcion}" required/>
+                                        <label class="wgk-label">Nombre del Sneaker</label>
+                                        <input type="text" name="descripcion" class="wgk-input"
+                                               th:value="${sneaker.descripcion}"
+                                               placeholder="Ej: Air Force 1 White" required/>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label fw-bold small text-uppercase">
-                                            Marca
-                                        </label>
-                                        <select name="marca.idMarca"
-                                                class="form-select form-control-wgk">
+                                        <label class="wgk-label">Marca</label>
+                                        <select name="marca.idMarca" class="wgk-input">
                                             <option th:each="m : ${marcas}"
                                                     th:value="${m.idMarca}"
                                                     th:text="${m.descripcion}"
-                                                    th:selected="${sneaker.marca != null
-                                                    and sneaker.marca.idMarca == m.idMarca}">
+                                                    th:selected="${sneaker.marca != null and sneaker.marca.idMarca == m.idMarca}">
                                             </option>
                                         </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label fw-bold small text-uppercase">
-                                            Precio ($)
-                                        </label>
-                                        <input type="number" step="0.01" name="precio"
-                                               class="form-control form-control-wgk"
-                                               th:value="${sneaker.precio}" required/>
+                                        <label class="wgk-label">Precio ($)</label>
+                                        <input type="number" step="0.01" name="precio" class="wgk-input"
+                                               th:value="${sneaker.precio}" placeholder="120.00" required/>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label fw-bold small text-uppercase">
-                                            Existencias
-                                        </label>
-                                        <input type="number" name="existencias"
-                                               class="form-control form-control-wgk"
-                                               th:value="${sneaker.existencias}"/>
+                                        <label class="wgk-label">Existencias</label>
+                                        <input type="number" name="existencias" class="wgk-input"
+                                               th:value="${sneaker.existencias}" placeholder="10"/>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label fw-bold small text-uppercase">
-                                            Tallas
-                                        </label>
-                                        <input type="text" name="tallas"
-                                               class="form-control form-control-wgk"
-                                               th:value="${sneaker.tallas}"/>
+                                        <label class="wgk-label">Tallas</label>
+                                        <input type="text" name="tallas" class="wgk-input"
+                                               th:value="${sneaker.tallas}" placeholder="38,39,40,41,42"/>
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label fw-bold small text-uppercase">
-                                            Detalle
-                                        </label>
-                                        <textarea name="detalle" rows="2"
-                                                  class="form-control form-control-wgk"
-                                                  th:text="${sneaker.detalle}">
-                                        </textarea>
+                                        <label class="wgk-label">Descripción / Detalle</label>
+                                        <textarea name="detalle" rows="2" class="wgk-input"
+                                                  placeholder="Describe el sneaker..."
+                                                  th:text="${sneaker.detalle}"></textarea>
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label fw-bold small text-uppercase">
-                                            Imagen actual
-                                        </label>
-                                        <img th:src="${sneaker.rutaImagen != null ? sneaker.rutaImagen :
-                                             'https://placehold.co/200x100/f8f8f8/111?text=WGK'}"
-                                             height="80" class="d-block mb-2 rounded"/>
-                                        <input type="file" name="imagenFile"
-                                               class="form-control form-control-wgk"
-                                               accept="image/*"/>
+                                        <label class="wgk-label">URL de la imagen</label>
+                                        <input type="text" name="rutaImagen" class="wgk-input"
+                                               th:value="${sneaker.rutaImagen}"
+                                               placeholder="https://images.unsplash.com/..."/>
+                                        <p class="wgk-hint">Pega la URL directa de la imagen (Unsplash, etc.)</p>
+                                        <div th:if="${sneaker.rutaImagen != null}" style="margin-top:10px;">
+                                            <img th:src="${sneaker.rutaImagen}"
+                                                 style="height:90px;border-radius:3px;border:1px solid var(--line);object-fit:cover;"/>
+                                        </div>
                                     </div>
                                     <div class="col-12">
-                                        <div class="form-check">
-                                            <input type="checkbox" name="activo" value="true"
-                                                   class="form-check-input"
+                                        <input type="hidden" name="imagenFile" value=""/>
+                                        <div class="d-flex align-items-center">
+                                            <input type="checkbox" name="activo" value="true" id="activoCheck"
                                                    th:checked="${sneaker.activo}"/>
-                                            <label class="form-check-label fw-bold small text-uppercase">
-                                                Activo
-                                            </label>
+                                            <label class="wgk-check-label" for="activoCheck">Activo</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-footer bg-white border-0 d-flex
-                                 justify-content-between p-4">
-                                <a th:href="@{/sneaker/listado}"
-                                   class="btn btn-wgk-outline">Cancelar</a>
-                                <button type="submit" class="btn btn-wgk">
-                                    <i class="fas fa-save me-1"></i>Guardar
+                            <div class="wgk-panel-foot">
+                                <a th:href="@{/sneaker/listado}" class="wgk-btn-ghost">
+                                    <i class="fas fa-arrow-left"></i>Cancelar
+                                </a>
+                                <button type="submit" class="wgk-btn">
+                                    <i class="fas fa-save"></i>Guardar Sneaker
                                 </button>
                             </div>
                         </form>
@@ -110,6 +93,7 @@
                 </div>
             </div>
         </div>
+
         <footer th:replace="~{general/fragmentos :: footer}"/>
     </body>
 </html>

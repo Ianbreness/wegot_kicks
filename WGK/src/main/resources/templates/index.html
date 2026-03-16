@@ -5,62 +5,64 @@
     <head th:replace="~{general/fragmentos :: head}"/>
     <body>
         <header th:replace="~{general/fragmentos :: header}"/>
+        <section th:replace="~{general/fragmentos :: mostrarToast}"/>
 
         <div class="container py-5">
 
-            <!-- Tabs marcas -->
-            <div class="d-flex justify-content-center flex-wrap nav-marcas mb-5">
-                <a class="nav-link active" th:href="@{/}">
-                    <i class="fas fa-th-large me-1"></i>Todas
+            <!-- Brand tabs -->
+            <div class="wgk-tabs mb-5">
+                <a class="wgk-tab active" th:href="@{/}">
+                    <i class="fas fa-th-large"></i>Todas
                 </a>
-                <a class="nav-link" th:each="m : ${marcas}"
+                <a class="wgk-tab" th:each="m : ${marcas}"
                    th:href="@{/marca/{id}(id=${m.idMarca})}"
                    th:text="${m.descripcion}">Marca</a>
             </div>
 
-            <!-- Titulo seccion -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="section-title">Catálogo</h2>
-                <span class="text-muted small fw-bold"
+            <!-- Section header -->
+            <div class="wgk-sec-head">
+                <h2 class="wgk-sec-title">Catálogo</h2>
+                <span class="wgk-count"
                       th:text="${sneakers != null ? sneakers.size() + ' modelos' : '0 modelos'}">
                 </span>
             </div>
 
-            <!-- Grid sneakers -->
-            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
+            <!-- Product grid -->
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4"
+                 th:if="${sneakers != null and !sneakers.isEmpty()}">
                 <div class="col" th:each="s : ${sneakers}">
-                    <div class="card card-sneaker h-100 border-0">
-                        <img th:src="${s.rutaImagen != null ? s.rutaImagen :
-                             'https://placehold.co/400x210/f8f8f8/111111?text=WGK'}"
-                             class="card-img-top" alt="sneaker"/>
-                        <div class="card-body pb-1">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <span class="badge badge-marca"
+                    <div class="wgk-card">
+                        <div class="wgk-card-img-wrap">
+                            <img class="wgk-card-img"
+                                 th:src="${s.rutaImagen != null ? s.rutaImagen :
+                                 'https://placehold.co/400x230/181818/2e2e2e?text=WGK'}"
+                                 alt="sneaker"/>
+                        </div>
+                        <div class="wgk-card-body">
+                            <div class="wgk-card-badges">
+                                <span class="wgk-badge-brand"
                                       th:text="${s.marca != null ? s.marca.descripcion : 'WGK'}">
                                 </span>
                                 <span th:if="${s.existencias != null and s.existencias > 0}"
-                                      class="badge bg-success"
+                                      class="wgk-badge-ok"
                                       th:text="${s.existencias} + ' disp.'">Stock</span>
                                 <span th:if="${s.existencias == null or s.existencias == 0}"
-                                      class="badge bg-danger">Agotado</span>
+                                      class="wgk-badge-out">Agotado</span>
                             </div>
-                            <h6 class="card-title-sneaker mb-1"
-                                th:text="${s.descripcion}">Nombre</h6>
-                            <p class="text-muted small mb-0"
-                               th:text="${s.tallas != null ? 'Tallas: ' + s.tallas : ''}">
-                            </p>
+                            <div class="wgk-card-name" th:text="${s.descripcion}">Nombre</div>
+                            <div class="wgk-card-sizes"
+                                 th:text="${s.tallas != null ? 'Tallas: ' + s.tallas : ''}">
+                            </div>
                         </div>
-                        <div class="card-footer bg-white border-top d-flex
-                             justify-content-between align-items-center py-3">
-                            <span class="price-tag"
+                        <div class="wgk-card-foot">
+                            <span class="wgk-price"
                                   th:text="'$' + ${#numbers.formatDecimal(s.precio, 1, 'COMMA', 2, 'POINT')}">
-                                $0
                             </span>
                             <form method="post"
                                   th:action="@{/carrito/agregar/{id}(id=${s.idSneaker})}">
-                                <button class="btn-cart-add"
+                                <button class="wgk-btn-add"
                                         th:disabled="${s.existencias == null or s.existencias == 0}">
-                                    <i class="fas fa-shopping-bag me-1"></i>Agregar
+                                    <i class="fas fa-shopping-bag"></i>Agregar
                                 </button>
                             </form>
                         </div>
@@ -68,12 +70,11 @@
                 </div>
             </div>
 
-            <!-- Sin productos -->
-            <div th:if="${sneakers == null or sneakers.isEmpty()}"
-                 class="text-center py-5">
-                <i class="fas fa-shoe-prints fa-4x text-muted mb-3"></i>
-                <h5 class="fw-bold text-muted">No hay sneakers disponibles</h5>
-                <p class="text-muted small">Vuelve pronto para ver los nuevos drops</p>
+            <!-- Empty state -->
+            <div th:if="${sneakers == null or sneakers.isEmpty()}" class="wgk-empty">
+                <i class="fas fa-shoe-prints"></i>
+                <h5>No hay sneakers disponibles</h5>
+                <p>Vuelve pronto para ver los nuevos drops.</p>
             </div>
 
         </div>

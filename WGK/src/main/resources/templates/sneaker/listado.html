@@ -1,15 +1,227 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"/>
     <body>
-        <div>TODO write content</div>
+        <header th:replace="~{general/fragmentos :: header}"/>
+        <section th:replace="~{general/fragmentos :: mostrarToast}"/>
+
+        <div class="container py-5">
+
+            <!-- Header de sección -->
+            <div class="wgk-sec-head">
+                <div>
+                    <h2 class="wgk-sec-title">Gestión de Sneakers</h2>
+                    <p style="color:var(--smoke);font-size:0.75rem;letter-spacing:1px;margin-top:6px;">
+                        <span th:text="${totalSneakers}">0</span> sneakers en el sistema
+                    </p>
+                </div>
+                <button class="wgk-btn-fire"
+                        data-bs-toggle="modal" data-bs-target="#modalNuevo"
+                        style="cursor:pointer;">
+                    <i class="fas fa-plus"></i>Nuevo Sneaker
+                </button>
+            </div>
+
+            <!-- Tabla -->
+            <div style="background:var(--ink2);border:1px solid var(--line);border-radius:4px;overflow:hidden;">
+                <table class="wgk-table">
+                    <thead>
+                        <tr>
+                            <th style="width:80px;">Imagen</th>
+                            <th>Nombre</th>
+                            <th>Marca</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Tallas</th>
+                            <th>Estado</th>
+                            <th style="width:110px;text-align:center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${sneakers == null or sneakers.isEmpty()}">
+                            <td colspan="8" style="text-align:center;padding:48px;color:var(--smoke);">
+                                <i class="fas fa-shoe-prints" style="font-size:2rem;display:block;margin-bottom:10px;color:var(--line);"></i>
+                                No hay sneakers registrados
+                            </td>
+                        </tr>
+                        <tr th:each="s : ${sneakers}">
+                            <td>
+                                <img th:src="${s.rutaImagen != null ? s.rutaImagen :
+                                     'https://placehold.co/64x64/181818/2e2e2e?text=WGK'}"
+                                     width="60" height="60"
+                                     style="object-fit:cover;border-radius:3px;border:1px solid var(--line);display:block;"/>
+                            </td>
+                            <td>
+                                <div style="font-family:var(--disp);font-size:0.95rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--paper);"
+                                     th:text="${s.descripcion}">Nombre</div>
+                                <div style="color:var(--smoke);font-size:0.7rem;margin-top:3px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+                                     th:text="${s.detalle}"></div>
+                            </td>
+                            <td>
+                                <span class="wgk-badge-brand"
+                                      th:text="${s.marca != null ? s.marca.descripcion : '—'}">
+                                </span>
+                            </td>
+                            <td>
+                                <span style="font-family:var(--disp);font-size:1.15rem;letter-spacing:1px;color:var(--paper);"
+                                      th:text="'$' + ${#numbers.formatDecimal(s.precio, 1, 'COMMA', 2, 'POINT')}">
+                                </span>
+                            </td>
+                            <td>
+                                <span th:if="${s.existencias != null and s.existencias > 0}"
+                                      class="wgk-badge-ok"
+                                      th:text="${s.existencias} + ' uds.'">Stock</span>
+                                <span th:if="${s.existencias == null or s.existencias == 0}"
+                                      class="wgk-badge-out">Agotado</span>
+                            </td>
+                            <td>
+                                <span style="color:var(--smoke);font-size:0.75rem;"
+                                      th:text="${s.tallas != null ? s.tallas : '—'}">
+                                </span>
+                            </td>
+                            <td>
+                                <span th:if="${s.activo}"
+                                      style="display:inline-flex;align-items:center;gap:5px;color:#4ade80;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">
+                                    <i class="fas fa-circle" style="font-size:.45rem;"></i>Activo
+                                </span>
+                                <span th:if="${!s.activo}"
+                                      style="display:inline-flex;align-items:center;gap:5px;color:var(--smoke);font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">
+                                    <i class="fas fa-circle" style="font-size:.45rem;"></i>Inactivo
+                                </span>
+                            </td>
+                            <td style="text-align:center;">
+                                <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
+                                    <a th:href="@{/sneaker/modificar/{id}(id=${s.idSneaker})}"
+                                       class="wgk-btn-ghost"
+                                       style="padding:7px 12px;font-size:0.62rem;">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form method="post" th:action="@{/sneaker/eliminar}"
+                                          onsubmit="return confirm('¿Eliminar este sneaker?')">
+                                        <input type="hidden" name="idSneaker" th:value="${s.idSneaker}"/>
+                                        <button type="submit" class="wgk-btn-fire"
+                                                style="padding:7px 12px;font-size:0.62rem;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ═══ MODAL NUEVO SNEAKER ═══ -->
+        <div class="modal fade" id="modalNuevo" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-plus me-2" style="color:var(--fire);"></i>Nuevo Sneaker
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form method="post" th:action="@{/sneaker/guardar}" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <input type="hidden" name="idSneaker" value=""/>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="wgk-label">Nombre del Sneaker</label>
+                                    <input type="text" name="descripcion" class="wgk-input"
+                                           placeholder="Ej: Air Force 1 White" required/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="wgk-label">Marca</label>
+                                    <select name="marca.idMarca" class="wgk-input">
+                                        <option th:each="m : ${marcas}"
+                                                th:value="${m.idMarca}"
+                                                th:text="${m.descripcion}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="wgk-label">Precio ($)</label>
+                                    <input type="number" step="0.01" name="precio" class="wgk-input"
+                                           placeholder="120.00" required/>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="wgk-label">Existencias</label>
+                                    <input type="number" name="existencias" class="wgk-input"
+                                           placeholder="10"/>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="wgk-label">Tallas</label>
+                                    <input type="text" name="tallas" class="wgk-input"
+                                           placeholder="38,39,40,41,42"/>
+                                </div>
+                                <div class="col-12">
+                                    <label class="wgk-label">Descripción</label>
+                                    <textarea name="detalle" rows="2" class="wgk-input"
+                                              placeholder="Describe el sneaker..."></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="wgk-label">URL de la imagen</label>
+                                    <input type="text" name="rutaImagen" class="wgk-input"
+                                           placeholder="https://images.unsplash.com/..."
+                                           id="urlPreviewInput"/>
+                                    <p class="wgk-hint">Pega la URL directa de Unsplash u otro servicio.</p>
+                                    <!-- Preview en tiempo real -->
+                                    <div id="imgPreviewWrap" style="display:none;margin-top:10px;">
+                                        <img id="imgPreview"
+                                             style="height:90px;border-radius:3px;border:1px solid var(--line);object-fit:cover;"/>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <!-- Campo requerido por el controller -->
+                                    <input type="file" name="imagenFile" style="display:none;"/>
+                                    <div class="d-flex align-items-center">
+                                        <input type="checkbox" name="activo" value="true"
+                                               id="activoNew" checked/>
+                                        <label class="wgk-check-label" for="activoNew">Activo</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="wgk-btn-ghost" data-bs-dismiss="modal">
+                                <i class="fas fa-times"></i>Cancelar
+                            </button>
+                            <button type="submit" class="wgk-btn">
+                                <i class="fas fa-save"></i>Guardar Sneaker
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Preview de imagen en tiempo real en el modal
+            const input = document.getElementById('urlPreviewInput');
+            const wrap = document.getElementById('imgPreviewWrap');
+            const prev = document.getElementById('imgPreview');
+            if (input) {
+                input.addEventListener('input', function () {
+                    const val = this.value.trim();
+                    if (val) {
+                        prev.src = val;
+                        wrap.style.display = 'block';
+                        prev.onerror = () => {
+                            wrap.style.display = 'none';
+                        };
+                        prev.onload = () => {
+                            wrap.style.display = 'block';
+                        };
+                    } else {
+                        wrap.style.display = 'none';
+                    }
+                });
+            }
+        </script>
+
+        <footer th:replace="~{general/fragmentos :: footer}"/>
     </body>
 </html>

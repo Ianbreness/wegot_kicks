@@ -17,9 +17,7 @@ public class SneakerService {
 
     @Transactional(readOnly = true)
     public List<Sneaker> getSneakers(boolean activo) {
-        if (activo) {
-            return sneakerRepository.findByActivoTrue();
-        }
+        if (activo) return sneakerRepository.findByActivoTrue();
         return sneakerRepository.findAll();
     }
 
@@ -38,11 +36,17 @@ public class SneakerService {
         return sneakerRepository.findByMarcaIdMarca(idMarca);
     }
 
+    /**
+     * Guarda el sneaker.
+     * La imagen se guarda como URL directa en el campo rutaImagen del formulario.
+     * No se guardan archivos físicos.
+     */
     @Transactional
     public void save(Sneaker sneaker, MultipartFile imagenFile) throws Exception {
-        if (imagenFile != null && !imagenFile.isEmpty()) {
-            String nombreArchivo = imagenFile.getOriginalFilename();
-            sneaker.setRutaImagen("/img/" + nombreArchivo);
+        // Si no viene URL desde el form pero sí un archivo, usar nombre del archivo (fallback)
+        if ((sneaker.getRutaImagen() == null || sneaker.getRutaImagen().isBlank())
+                && imagenFile != null && !imagenFile.isEmpty()) {
+            sneaker.setRutaImagen("/img/" + imagenFile.getOriginalFilename());
         }
         sneakerRepository.save(sneaker);
     }
