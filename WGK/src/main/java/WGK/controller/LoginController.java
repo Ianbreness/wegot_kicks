@@ -8,11 +8,11 @@ public class LoginController {
 
     @GetMapping("/login")
     public String login() {
-        return "/login";
+        return "login";
     }
 
     @GetMapping("/acceso_denegado")
     public String accesoDenegado() {
-        return "/acceso_denegado";
+        return "acceso_denegado";
     }
 }

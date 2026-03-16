@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+    <head th:fragment="head">
+        <title>WGK - WegoTKicks PR</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
+        <link th:href="@{/webjars/font-awesome/css/all.css}" rel="stylesheet"/>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                background-color: #ffffff;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                color: #111;
+            }
+
+            /* NAVBAR */
+            .navbar-wgk {
+                background-color: #ffffff;
+                border-bottom: 3px solid #111111;
+                padding: 10px 0;
+            }
+            .navbar-brand-wgk {
+                font-weight: 900;
+                font-size: 1.8rem;
+                color: #111 !important;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+            }
+            .navbar-brand-wgk span {
+                color: #e63946;
+            }
+            .navbar-wgk .nav-link {
+                color: #111 !important;
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.82rem;
+                letter-spacing: 1px;
+                padding: 8px 12px !important;
+            }
+            .navbar-wgk .nav-link:hover {
+                color: #e63946 !important;
+            }
+
+            /* HERO */
+            .hero-wgk {
+                background-color: #111111;
+                color: #fff;
+                padding: 40px 0;
+            }
+            .hero-wgk h1 {
+                font-weight: 900;
+                font-size: 2.8rem;
+                text-transform: uppercase;
+                letter-spacing: 4px;
+                line-height: 1.1;
+            }
+            .hero-wgk h1 span {
+                color: #e63946;
+            }
+            .hero-wgk p {
+                color: #aaa;
+                font-size: 0.9rem;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+            }
+            .hero-badge {
+                background-color: #e63946;
+                color: #fff;
+                font-weight: 800;
+                font-size: 0.7rem;
+                letter-spacing: 2px;
+                padding: 4px 12px;
+                text-transform: uppercase;
+                display: inline-block;
+                margin-bottom: 10px;
+            }
+
+            /* TABS MARCAS */
+            .nav-marcas {
+                gap: 8px;
+            }
+            .nav-marcas .nav-link {
+                background-color: #f5f5f5;
+                color: #111;
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 0.75rem;
+                letter-spacing: 1px;
+                border: 2px solid #eee;
+                border-radius: 4px;
+                padding: 6px 16px;
+                transition: all 0.2s;
+            }
+            .nav-marcas .nav-link:hover {
+                border-color: #111;
+                color: #111;
+            }
+            .nav-marcas .nav-link.active {
+                background-color: #111;
+                color: #fff !important;
+                border-color: #111;
+            }
+
+            /* CARDS */
+            .card-sneaker {
+                border: 2px solid #f0f0f0;
+                border-radius: 8px;
+                transition: all 0.25s;
+                background: #fff;
+                overflow: hidden;
+            }
+            .card-sneaker:hover {
+                border-color: #111;
+                transform: translateY(-4px);
+                box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            }
+            .card-sneaker .card-img-top {
+                height: 210px;
+                object-fit: cover;
+                background: #f8f8f8;
+            }
+            .badge-marca {
+                background-color: #111;
+                color: #fff;
+                font-weight: 700;
+                font-size: 0.68rem;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                border-radius: 3px;
+                padding: 3px 8px;
+            }
+            .badge-marca-red {
+                background-color: #e63946;
+            }
+            .card-title-sneaker {
+                font-weight: 800;
+                font-size: 0.95rem;
+                text-transform: uppercase;
+                color: #111;
+                letter-spacing: 0.5px;
+            }
+            .price-tag {
+                font-weight: 900;
+                font-size: 1.15rem;
+                color: #111;
+            }
+            .btn-cart-add {
+                background-color: #111;
+                color: #fff;
+                border: none;
+                font-weight: 700;
+                font-size: 0.75rem;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                border-radius: 4px;
+                padding: 8px 14px;
+                transition: background 0.2s;
+            }
+            .btn-cart-add:hover {
+                background-color: #e63946;
+                color: #fff;
+            }
+            .btn-cart-add:disabled {
+                background-color: #ccc;
+                cursor: not-allowed;
+            }
+
+            /* BOTONES GENERALES */
+            .btn-wgk {
+                background-color: #111;
+                color: #fff;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-size: 0.82rem;
+                border: 2px solid #111;
+                border-radius: 4px;
+                padding: 8px 20px;
+            }
+            .btn-wgk:hover {
+                background-color: #e63946;
+                border-color: #e63946;
+                color: #fff;
+            }
+            .btn-wgk-outline {
+                background-color: transparent;
+                color: #111;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-size: 0.82rem;
+                border: 2px solid #111;
+                border-radius: 4px;
+                padding: 8px 20px;
+            }
+            .btn-wgk-outline:hover {
+                background-color: #111;
+                color: #fff;
+            }
+            .btn-wgk-red {
+                background-color: #e63946;
+                color: #fff;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-size: 0.82rem;
+                border: 2px solid #e63946;
+                border-radius: 4px;
+                padding: 8px 20px;
+            }
+            .btn-wgk-red:hover {
+                background-color: #c1121f;
+                border-color: #c1121f;
+                color: #fff;
+            }
+
+            /* SECTION TITLES */
+            .section-title {
+                font-weight: 900;
+                font-size: 1.6rem;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                color: #111;
+                border-left: 5px solid #e63946;
+                padding-left: 12px;
+            }
+
+            /* TABLA ADMIN */
+            .table-wgk thead th {
+                background-color: #111;
+                color: #fff;
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 0.78rem;
+                letter-spacing: 1px;
+                border: none;
+            }
+            .table-wgk tbody tr:hover {
+                background-color: #f8f8f8;
+            }
+            .table-wgk td {
+                vertical-align: middle;
+                font-size: 0.9rem;
+                border-color: #f0f0f0;
+            }
+
+            /* MODAL */
+            .modal-header-wgk {
+                background-color: #111;
+                color: #fff;
+            }
+            .modal-header-wgk .btn-close {
+                filter: invert(1);
+            }
+
+            /* FORM */
+            .form-control-wgk {
+                border: 2px solid #e0e0e0;
+                border-radius: 4px;
+                font-size: 0.9rem;
+            }
+            .form-control-wgk:focus {
+                border-color: #111;
+                box-shadow: none;
+            }
+
+            /* FOOTER */
+            .footer-wgk {
+                background-color: #111;
+                color: #fff;
+                padding: 40px 0 20px;
+            }
+            .footer-wgk h6 {
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                color: #e63946;
+                margin-bottom: 12px;
+            }
+            .footer-wgk p, .footer-wgk a {
+                color: #aaa;
+                font-size: 0.85rem;
+                text-decoration: none;
+            }
+            .footer-wgk a:hover {
+                color: #fff;
+            }
+            .footer-divider {
+                border-color: #333;
+                margin: 20px 0;
+            }
+
+            /* CARRITO */
+            .cart-table thead th {
+                background-color: #111;
+                color: #fff;
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 0.78rem;
+                letter-spacing: 1px;
+            }
+            .cart-total-box {
+                background-color: #f8f8f8;
+                border: 2px solid #111;
+                border-radius: 8px;
+                padding: 24px;
+            }
+            .cart-total-price {
+                font-weight: 900;
+                font-size: 2rem;
+                color: #111;
+            }
+
+            /* LOGIN */
+            .login-card {
+                border: 2px solid #f0f0f0;
+                border-radius: 8px;
+                padding: 40px;
+            }
+            .login-icon {
+                width: 80px;
+                height: 80px;
+                background-color: #111;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 20px;
+            }
+
+            /* STATS CARD */
+            .stats-card {
+                background-color: #111;
+                color: #fff;
+                border-radius: 8px;
+                padding: 16px 24px;
+                text-align: center;
+            }
+            .stats-card .number {
+                font-weight: 900;
+                font-size: 2rem;
+                color: #e63946;
+            }
+            .stats-card .label {
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                color: #aaa;
+            }
+        </style>
+    </head>
+
+    <header th:fragment="header">
+        <nav class="navbar navbar-expand-lg navbar-wgk px-3">
+            <div class="container">
+                <a th:href="@{/}" class="navbar-brand navbar-brand-wgk">
+                    WGK<span>.</span>
+                </a>
+                <button class="navbar-toggler" data-bs-toggle="collapse"
+                        data-bs-target="#navbarCollapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                    <ul class="navbar-nav gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/}">Inicio</a>
+                        </li>
+                        <li class="nav-item"
+                            sec:authorize="hasRole('ROLE_VENDEDOR') or hasRole('ROLE_ADMIN')">
+                            <a class="nav-link" th:href="@{/sneaker/listado}">Sneakers</a>
+                        </li>
+                        <li class="nav-item"
+                            sec:authorize="hasRole('ROLE_VENDEDOR') or hasRole('ROLE_ADMIN')">
+                            <a class="nav-link" th:href="@{/marca/listado}">Marcas</a>
+                        </li>
+                        <li class="nav-item dropdown" sec:authorize="hasRole('ROLE_ADMIN')">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                                Admin
+                            </a>
+                            <ul class="dropdown-menu border-0 shadow">
+                                <li>
+                                    <a class="dropdown-item fw-bold text-uppercase small"
+                                       th:href="@{/usuario/listado}">
+                                        <i class="fas fa-users me-2"></i>Usuarios
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav align-items-center gap-2">
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" th:href="@{/carrito/ver}">
+                                <i class="fas fa-shopping-bag me-1"></i>Carrito
+                            </a>
+                        </li>
+                        <li class="nav-item" sec:authorize="!isAuthenticated()">
+                            <a class="btn btn-wgk btn-sm" th:href="@{/login}">
+                                <i class="fas fa-user me-1"></i>Login
+                            </a>
+                        </li>
+                        <li class="nav-item d-flex align-items-center gap-2"
+                            sec:authorize="isAuthenticated()">
+                            <span class="nav-link fw-bold" style="color:#e63946 !important;">
+                                <i class="fas fa-user-circle me-1"></i>
+                                <span sec:authentication="name"></span>
+                            </span>
+                            <form method="post" th:action="@{/logout}" class="d-inline m-0">
+                                <button class="btn btn-wgk-outline btn-sm">
+                                    <i class="fas fa-sign-out-alt me-1"></i>Salir
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="hero-wgk">
+            <div class="container">
+                <div class="hero-badge">
+                    <i class="fas fa-certificate me-1"></i>Sneakers Certificados
+                </div>
+                <h1>Wego<span>TKicks</span> PR</h1>
+                <p>Limited editions · Iconic drops · Exclusive streetwear vibes</p>
+            </div>
+        </div>
+    </header>
+
+    <footer th:fragment="footer" class="footer-wgk mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <h6>WGK</h6>
+                    <p>Tienda certificada de sneakers legit. Autenticidad garantizada.</p>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#"><i class="fab fa-instagram fa-lg text-white"></i></a>
+                        <a href="#"><i class="fab fa-facebook fa-lg text-white"></i></a>
+                        <a href="#"><i class="fab fa-tiktok fa-lg text-white"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6>Ubicación</h6>
+                    <p>Nuestra Ubicación<br/>Puerto Rico</p>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6>Reseñas</h6>
+                    <p>Deja tu experiencia o sugerencia con WGK aquí</p>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6>Horario</h6>
+                    <p>De lunes a sábado<br/>2:00pm a 10:00pm</p>
+                    <h6 class="mt-3">Servicios</h6>
+                    <p><i class="fas fa-phone me-1"></i>3244-2144</p>
+                </div>
+            </div>
+            <hr class="footer-divider"/>
+            <p class="text-center mb-0" style="color:#555; font-size:0.8rem;">
+                &copy; 2026 WegoTKicks PR — Todos los derechos reservados
+            </p>
+        </div>
+    </footer>
+
+    <section th:fragment="mostrarToast">
+        <div class="position-fixed top-0 end-0 p-3" style="z-index:1080;">
+            <div th:if="${error}" class="toast show" data-bs-autohide="true">
+                <div class="toast-header bg-danger text-white">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong class="me-auto">Error</strong>
+                    <button type="button" class="btn-close btn-close-white"
+                            data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">[[${error}]]</div>
+            </div>
+            <div th:if="${todoOk}" class="toast show" data-bs-autohide="true">
+                <div class="toast-header bg-success text-white">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong class="me-auto">Listo</strong>
+                    <button type="button" class="btn-close btn-close-white"
+                            data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">[[${todoOk}]]</div>
+            </div>
+        </div>
+    </section>
+
+</html>

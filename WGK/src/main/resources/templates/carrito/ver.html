@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"/>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"/>
+        <div class="container py-5">
+            <h2 class="section-title mb-5">Mis Pedidos</h2>
+
+            <div th:if="${carrito == null or carrito.isEmpty()}"
+                 class="text-center py-5">
+                <i class="fas fa-shopping-bag fa-4x text-muted mb-3"></i>
+                <h5 class="fw-bold">Tu carrito está vacío</h5>
+                <p class="text-muted">Todavía no has agregado ningún sneaker</p>
+                <a th:href="@{/}" class="btn btn-wgk mt-2">
+                    <i class="fas fa-shoe-prints me-2"></i>Ver Catálogo
+                </a>
+            </div>
+
+            <div th:if="${carrito != null and !carrito.isEmpty()}">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <table class="table cart-table">
+                            <thead>
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Nombre Producto</th>
+                                    <th>Descripción</th>
+                                    <th>Cantidad</th>
+                                    <th>Eliminar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="s, iter : ${carrito}">
+                                    <td>
+                                        <img th:src="${s.rutaImagen != null ? s.rutaImagen :
+                                             'https://placehold.co/80x80/f8f8f8/111?text=WGK'}"
+                                             width="70" height="70"
+                                             style="object-fit:cover; border-radius:4px;"/>
+                                    </td>
+                                    <td class="fw-bold align-middle"
+                                        th:text="${s.descripcion}">Nombre</td>
+                                    <td class="text-muted align-middle small"
+                                        th:text="${s.marca != null ? s.marca.descripcion : ''}">
+                                        Marca
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="badge bg-dark">1</span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <form method="post"
+                                              th:action="@{/carrito/eliminar/{i}(i=${iter.index})}">
+                                            <button class="btn btn-wgk-red btn-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="cart-total-box">
+                            <h5 class="fw-900 text-uppercase mb-3"
+                                style="font-weight:900; letter-spacing:1px;">
+                                Resumen
+                            </h5>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Subtotal</span>
+                                <span class="fw-bold"
+                                      th:text="'$' + ${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}">
+                                    $0
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted small">Envío</span>
+                                <span class="fw-bold text-success">Gratis</span>
+                            </div>
+                            <hr/>
+                            <div class="d-flex justify-content-between mb-4">
+                                <span class="fw-bold text-uppercase">Total</span>
+                                <span class="cart-total-price"
+                                      th:text="'$' + ${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}">
+                                    $0
+                                </span>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-wgk py-2">
+                                    <i class="fas fa-credit-card me-2"></i>PAGAR
+                                </button>
+                                <form method="post" th:action="@{/carrito/vaciar}">
+                                    <button class="btn btn-wgk-outline w-100">
+                                        <i class="fas fa-trash-alt me-2"></i>Vaciar
+                                    </button>
+                                </form>
+                                <a th:href="@{/}" class="btn btn-wgk-outline">
+                                    <i class="fas fa-arrow-left me-2"></i>Seguir comprando
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer th:replace="~{general/fragmentos :: footer}"/>
+    </body>
+</html>

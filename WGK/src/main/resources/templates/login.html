@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"/>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"/>
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <div class="login-card">
+                        <div class="login-icon">
+                            <i class="fas fa-user fa-2x text-white"></i>
+                        </div>
+                        <h4 class="text-center fw-bold text-uppercase mb-1"
+                            style="font-weight:900; letter-spacing:2px;">
+                            Inicio de Sesión
+                        </h4>
+                        <p class="text-center text-muted small mb-4">
+                            Accede a tu cuenta WGK
+                        </p>
+                        <form method="POST" th:action="@{/login}">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-uppercase">
+                                    Usuario
+                                </label>
+                                <input class="form-control form-control-wgk"
+                                       type="text" name="username"
+                                       placeholder="Ingresa tu usuario"/>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-uppercase">
+                                    Contraseña
+                                </label>
+                                <input class="form-control form-control-wgk"
+                                       type="password" name="password"
+                                       placeholder="••••••••"/>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-wgk py-2" type="submit">
+                                    <i class="fas fa-sign-in-alt me-2"></i>ENTRAR
+                                </button>
+                                <a th:href="@{/}" class="btn btn-wgk-outline py-2">
+                                    <i class="fas fa-arrow-left me-2"></i>VOLVER
+                                </a>
+                            </div>
+                        </form>
+                        <div th:if="${param.error != null}"
+                             class="alert alert-danger mt-3 text-center small border-0"
+                             style="border-radius:4px;">
+                            <i class="fas fa-exclamation-circle me-1"></i>
+                            Usuario o contraseña incorrectos
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer th:replace="~{general/fragmentos :: footer}"/>
+    </body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+    <head th:replace="~{general/fragmentos :: head}"/>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"/>
+
+        <div class="container py-5">
+
+            <!-- Tabs marcas -->
+            <div class="d-flex justify-content-center flex-wrap nav-marcas mb-5">
+                <a class="nav-link active" th:href="@{/}">
+                    <i class="fas fa-th-large me-1"></i>Todas
+                </a>
+                <a class="nav-link" th:each="m : ${marcas}"
+                   th:href="@{/marca/{id}(id=${m.idMarca})}"
+                   th:text="${m.descripcion}">Marca</a>
+            </div>
+
+            <!-- Titulo seccion -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title">Catálogo</h2>
+                <span class="text-muted small fw-bold"
+                      th:text="${sneakers != null ? sneakers.size() + ' modelos' : '0 modelos'}">
+                </span>
+            </div>
+
+            <!-- Grid sneakers -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
+                <div class="col" th:each="s : ${sneakers}">
+                    <div class="card card-sneaker h-100 border-0">
+                        <img th:src="${s.rutaImagen != null ? s.rutaImagen :
+                             'https://placehold.co/400x210/f8f8f8/111111?text=WGK'}"
+                             class="card-img-top" alt="sneaker"/>
+                        <div class="card-body pb-1">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge badge-marca"
+                                      th:text="${s.marca != null ? s.marca.descripcion : 'WGK'}">
+                                </span>
+                                <span th:if="${s.existencias != null and s.existencias > 0}"
+                                      class="badge bg-success"
+                                      th:text="${s.existencias} + ' disp.'">Stock</span>
+                                <span th:if="${s.existencias == null or s.existencias == 0}"
+                                      class="badge bg-danger">Agotado</span>
+                            </div>
+                            <h6 class="card-title-sneaker mb-1"
+                                th:text="${s.descripcion}">Nombre</h6>
+                            <p class="text-muted small mb-0"
+                               th:text="${s.tallas != null ? 'Tallas: ' + s.tallas : ''}">
+                            </p>
+                        </div>
+                        <div class="card-footer bg-white border-top d-flex
+                             justify-content-between align-items-center py-3">
+                            <span class="price-tag"
+                                  th:text="'$' + ${#numbers.formatDecimal(s.precio, 1, 'COMMA', 2, 'POINT')}">
+                                $0
+                            </span>
+                            <form method="post"
+                                  th:action="@{/carrito/agregar/{id}(id=${s.idSneaker})}">
+                                <button class="btn-cart-add"
+                                        th:disabled="${s.existencias == null or s.existencias == 0}">
+                                    <i class="fas fa-shopping-bag me-1"></i>Agregar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sin productos -->
+            <div th:if="${sneakers == null or sneakers.isEmpty()}"
+                 class="text-center py-5">
+                <i class="fas fa-shoe-prints fa-4x text-muted mb-3"></i>
+                <h5 class="fw-bold text-muted">No hay sneakers disponibles</h5>
+                <p class="text-muted small">Vuelve pronto para ver los nuevos drops</p>
+            </div>
+
+        </div>
+
+        <footer th:replace="~{general/fragmentos :: footer}"/>
+    </body>
+</html>
