@@ -1,5 +1,6 @@
 package WGK;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.LocaleResolver;
@@ -12,6 +13,10 @@ import java.util.Locale;
 
 @Configuration
 public class ProjectConfig implements WebMvcConfigurer {
+
+    // Lee la ruta de application.properties
+    @Value("${wgk.imagenes.ruta}")
+    private String rutaImagenes;
 
     @Bean
     public LocaleResolver localeResolver() {
@@ -34,7 +39,15 @@ public class ProjectConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/img/**")
-                .addResourceLocations("classpath:/static/img/");
+
+        // Recursos estáticos internos del classpath (CSS, JS, webjars, etc.)
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/");
+
+        // ── CARPETA EXTERNA DE IMÁGENES ──
+        // Las imágenes subidas se sirven en /uploads/**
+        // Ejemplo: /uploads/airforce1.jpg → C:/wgk-imagenes/airforce1.jpg
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:" + rutaImagenes);
     }
 }

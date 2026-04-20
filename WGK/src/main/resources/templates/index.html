@@ -7,78 +7,249 @@
         <header th:replace="~{general/fragmentos :: header}"/>
         <section th:replace="~{general/fragmentos :: mostrarToast}"/>
 
+        <!-- ════════════════════════════════════
+             HERO CAROUSEL (hidden during search)
+        ════════════════════════════════════ -->
+        <div class="wgk-carousel" th:if="${busqueda == null}">
+
+            <!-- Slide 1: Air Force 1 -->
+            <div class="wgk-slide active"
+                 style="background:linear-gradient(135deg,#0d1117 55%,#1a0505 100%);">
+                <div class="wgk-slide-content">
+                    <div class="wgk-slide-eye">New Drop · Limited Stock</div>
+                    <div class="wgk-slide-title">Air Force<br/>1 White</div>
+                    <div class="wgk-slide-sub">Nike · El clásico que nunca pasa de moda</div>
+                    <a th:href="@{/marca/1}" class="wgk-slide-btn">
+                        Shop Now <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="wgk-slide-img">
+                    <img src="https://images.unsplash.com/photo-1543508282-6319a3e2621f?w=700&h=700&fit=crop"
+                         alt="Nike Air Force 1 White"/>
+                </div>
+            </div>
+
+            <!-- Slide 2: Air Jordan 1 -->
+            <div class="wgk-slide"
+                 style="background:linear-gradient(135deg,#0d1117 55%,#0a0014 100%);">
+                <div class="wgk-slide-content">
+                    <div class="wgk-slide-eye">Icónico · Retro High</div>
+                    <div class="wgk-slide-title">Air Jordan<br/>1 Retro</div>
+                    <div class="wgk-slide-sub">Jordan · Rojo y negro · La silueta original</div>
+                    <a th:href="@{/marca/3}" class="wgk-slide-btn">
+                        Shop Now <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="wgk-slide-img">
+                    <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?w=700&h=700&fit=crop"
+                         alt="Air Jordan 1 Retro"/>
+                </div>
+            </div>
+
+            <!-- Slide 3: Dunk Low Panda -->
+            <div class="wgk-slide"
+                 style="background:linear-gradient(135deg,#0d1117 55%,#001a0a 100%);">
+                <div class="wgk-slide-content">
+                    <div class="wgk-slide-eye">Streetwear Essential</div>
+                    <div class="wgk-slide-title">Dunk Low<br/>Panda</div>
+                    <div class="wgk-slide-sub">Nike · Blanco y negro · El drop más pedido</div>
+                    <a th:href="@{/marca/1}" class="wgk-slide-btn">
+                        Shop Now <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="wgk-slide-img">
+                    <img src="https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=700&h=700&fit=crop"
+                         alt="Nike Dunk Low Panda"/>
+                </div>
+            </div>
+
+            <!-- Slide 4: Adidas Samba -->
+            <div class="wgk-slide"
+                 style="background:linear-gradient(135deg,#0d1117 55%,#0a1400 100%);">
+                <div class="wgk-slide-content">
+                    <div class="wgk-slide-eye">Clásico Europeo</div>
+                    <div class="wgk-slide-title">Samba OG<br/>Adidas</div>
+                    <div class="wgk-slide-sub">Adidas · Cuero blanco · El retro del momento</div>
+                    <a th:href="@{/marca/2}" class="wgk-slide-btn">
+                        Shop Now <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="wgk-slide-img">
+                    <img src="https://images.unsplash.com/photo-1588361861040-ac9b1018f6d5?w=700&h=700&fit=crop"
+                         alt="Adidas Samba OG"/>
+                </div>
+            </div>
+
+            <!-- Vertical brand labels -->
+            <div class="wgk-carousel-brands">
+                <span class="active" onclick="goSlide(0)">Nike AF1</span>
+                <span onclick="goSlide(1)">Jordan</span>
+                <span onclick="goSlide(2)">Panda</span>
+                <span onclick="goSlide(3)">Samba</span>
+            </div>
+
+            <!-- Prev / Next controls -->
+            <button class="wgk-ctrl prev" onclick="changeSlide(-1)">&#8249;</button>
+            <button class="wgk-ctrl next" onclick="changeSlide(1)">&#8250;</button>
+
+            <!-- Dots -->
+            <div class="wgk-dots">
+                <button class="wgk-dot active" onclick="goSlide(0)"></button>
+                <button class="wgk-dot" onclick="goSlide(1)"></button>
+                <button class="wgk-dot" onclick="goSlide(2)"></button>
+                <button class="wgk-dot" onclick="goSlide(3)"></button>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════
+             CATALOGUE
+        ════════════════════════════════════ -->
         <div class="container py-5">
 
-            <!-- Brand tabs -->
-            <div class="wgk-tabs mb-5">
-                <a class="wgk-tab active" th:href="@{/}">
-                    <i class="fas fa-th-large"></i>Todas
-                </a>
-                <a class="wgk-tab" th:each="m : ${marcas}"
+            <!-- Filter tabs by brand -->
+            <div class="wgk-filter-row">
+                <a class="wgk-filter-btn active" th:href="@{/}">Todos</a>
+                <a class="wgk-filter-btn"
+                   th:each="m : ${marcas}"
                    th:href="@{/marca/{id}(id=${m.idMarca})}"
-                   th:text="${m.descripcion}">Marca</a>
+                   th:text="${m.descripcion}"
+                   th:classappend="${idMarcaActual != null and idMarcaActual == m.idMarca} ? ' active' : ''">
+                </a>
             </div>
 
             <!-- Section header -->
-            <div class="wgk-sec-head">
-                <h2 class="wgk-sec-title">Catálogo</h2>
-                <span class="wgk-count"
-                      th:text="${sneakers != null ? sneakers.size() + ' modelos' : '0 modelos'}">
-                </span>
+            <div class="wgk-sec-head mb-4">
+                <h2 class="wgk-sec-title">
+                    <i class="fas fa-fire me-2" style="color:var(--red);font-size:.85rem;"
+                       th:if="${busqueda == null}"></i>
+                    <span th:if="${busqueda == null}">Catálogo Completo</span>
+                    <span th:if="${busqueda != null}">
+                        <i class="fas fa-search me-2" style="color:var(--red);font-size:.85rem;"></i>
+                        Resultados para: &ldquo;<span th:text="${busqueda}"></span>&rdquo;
+                    </span>
+                </h2>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span class="wgk-count"
+                          th:text="${sneakers != null ? sneakers.size() + ' modelos' : '0 modelos'}">
+                    </span>
+                    <a th:if="${busqueda != null}" th:href="@{/}"
+                       style="font-size:0.72rem;font-weight:600;color:var(--smoke);
+                       border:1px solid var(--line);padding:4px 10px;border-radius:20px;
+                       transition:all .2s;"
+                       onmouseover="this.style.color = 'var(--white)';this.style.borderColor = 'var(--smoke)'"
+                       onmouseout="this.style.color = 'var(--smoke)';this.style.borderColor = 'var(--line)'">
+                        <i class="fas fa-times me-1"></i>Limpiar
+                    </a>
+                </div>
             </div>
 
-            <!-- Product grid -->
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4"
+            <!-- Product grid — 2 cols mobile / 3 tablet / 4 desktop / 5 wide -->
+            <div class="wgk-product-grid"
                  th:if="${sneakers != null and !sneakers.isEmpty()}">
-                <div class="col" th:each="s : ${sneakers}">
+                <div th:each="s : ${sneakers}">
                     <div class="wgk-card">
-                        <div class="wgk-card-img-wrap">
-                            <img class="wgk-card-img"
-                                 th:src="${s.rutaImagen != null ? s.rutaImagen :
-                                 'https://placehold.co/400x230/181818/2e2e2e?text=WGK'}"
-                                 alt="sneaker"/>
-                        </div>
-                        <div class="wgk-card-body">
-                            <div class="wgk-card-badges">
-                                <span class="wgk-badge-brand"
-                                      th:text="${s.marca != null ? s.marca.descripcion : 'WGK'}">
-                                </span>
-                                <span th:if="${s.existencias != null and s.existencias > 0}"
-                                      class="wgk-badge-ok"
-                                      th:text="${s.existencias} + ' disp.'">Stock</span>
-                                <span th:if="${s.existencias == null or s.existencias == 0}"
-                                      class="wgk-badge-out">Agotado</span>
+
+                        <!-- Heart -->
+                        <button class="wgk-card-fav" type="button" title="Favorito">
+                            <i class="far fa-heart"></i>
+                        </button>
+
+                        <!-- Image — clic abre detalle en nueva pestaña -->
+                        <a th:href="@{/sneaker/detalle/{id}(id=${s.idSneaker})}"
+                           target="_blank"
+                           style="display:block;text-decoration:none;">
+                            <div class="wgk-card-img-wrap">
+                                <img class="wgk-card-img"
+                                     th:src="${s.rutaImagen != null ? s.rutaImagen :
+                                     'https://placehold.co/400x400/f4f4f4/aaaaaa?text=WGK'}"
+                                     th:alt="${s.descripcion}"
+                                     loading="lazy"/>
+                            </div>
+                        </a>
+
+                        <!-- Info -->
+                        <div class="wgk-card-info">
+                            <div class="wgk-card-brand"
+                                 th:text="${s.marca != null ? s.marca.descripcion : 'WGK'}">
                             </div>
                             <div class="wgk-card-name" th:text="${s.descripcion}">Nombre</div>
                             <div class="wgk-card-sizes"
                                  th:text="${s.tallas != null ? 'Tallas: ' + s.tallas : ''}">
                             </div>
-                        </div>
-                        <div class="wgk-card-foot">
-                            <span class="wgk-price"
-                                  th:text="'$' + ${#numbers.formatDecimal(s.precio, 1, 'COMMA', 2, 'POINT')}">
+                            <div class="wgk-card-price-label">Precio más bajo</div>
+                            <div class="wgk-card-price"
+                                 th:text="'$' + ${#numbers.formatDecimal(s.precio, 1, 'COMMA', 2, 'POINT')}">
+                            </div>
+                            <span th:if="${s.existencias != null and s.existencias > 0}"
+                                  class="wgk-card-stock-ok"
+                                  th:text="${s.existencias} + ' disponibles'">
                             </span>
-                            <form method="post"
-                                  th:action="@{/carrito/agregar/{id}(id=${s.idSneaker})}">
-                                <button class="wgk-btn-add"
-                                        th:disabled="${s.existencias == null or s.existencias == 0}">
-                                    <i class="fas fa-shopping-bag"></i>Agregar
-                                </button>
-                            </form>
+                            <span th:if="${s.existencias == null or s.existencias == 0}"
+                                  class="wgk-card-stock-out">Agotado</span>
                         </div>
+
+                        <!-- Add to cart -->
+                        <form method="post"
+                              th:action="@{/carrito/agregar/{id}(id=${s.idSneaker})}">
+                            <button class="wgk-card-btn"
+                                    th:disabled="${s.existencias == null or s.existencias == 0}">
+                                <i class="fas fa-shopping-bag"></i>Agregar al carrito
+                            </button>
+                        </form>
+
                     </div>
                 </div>
             </div>
 
             <!-- Empty state -->
             <div th:if="${sneakers == null or sneakers.isEmpty()}" class="wgk-empty">
-                <i class="fas fa-shoe-prints"></i>
-                <h5>No hay sneakers disponibles</h5>
-                <p>Vuelve pronto para ver los nuevos drops.</p>
+                <i class="fas fa-shoe-prints" th:if="${busqueda == null}"></i>
+                <i class="fas fa-search" th:if="${busqueda != null}"></i>
+                <h5 th:if="${busqueda == null}">No hay sneakers disponibles</h5>
+                <h5 th:if="${busqueda != null}">Sin resultados</h5>
+                <p th:if="${busqueda == null}">Vuelve pronto para ver los nuevos drops.</p>
+                <p th:if="${busqueda != null}"
+                   th:text="'No encontramos nada para &quot;' + ${busqueda} + '&quot;'"></p>
+                <a th:if="${busqueda != null}" th:href="@{/}"
+                   class="wgk-btn-red" style="margin-top:16px;text-decoration:none;">
+                    Ver todo el catálogo
+                </a>
             </div>
 
         </div>
 
         <footer th:replace="~{general/fragmentos :: footer}"/>
+
+        <!-- Carousel JS -->
+        <script>
+            let cur = 0;
+            const slides = document.querySelectorAll('.wgk-slide');
+            const dots = document.querySelectorAll('.wgk-dot');
+            const brands = document.querySelectorAll('.wgk-carousel-brands span');
+
+            function goSlide(n) {
+                slides[cur].classList.remove('active');
+                dots[cur].classList.remove('active');
+                brands[cur].classList.remove('active');
+                cur = (n + slides.length) % slides.length;
+                slides[cur].classList.add('active');
+                dots[cur].classList.add('active');
+                brands[cur].classList.add('active');
+            }
+            function changeSlide(d) {
+                goSlide(cur + d);
+            }
+            setInterval(() => changeSlide(1), 5000);
+
+            // Heart toggle
+            document.querySelectorAll('.wgk-card-fav').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const icon = this.querySelector('i');
+                    icon.classList.toggle('far');
+                    icon.classList.toggle('fas');
+                    this.style.color = icon.classList.contains('fas') ? 'var(--red)' : '#ccc';
+                });
+            });
+        </script>
     </body>
 </html>

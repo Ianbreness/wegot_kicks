@@ -17,7 +17,10 @@ public class SecurityConfig {
     public static final String[] PUBLIC_URLS = {
         "/", "/index", "/fav/**", "/carrito/**", "/sneaker/**",
         "/js/**", "/webjars/**", "/img/**", "/login", "/acceso_denegado",
-        "/registro/**", "/css/**"
+        "/registro/**", "/css/**",
+        "/buscar",          // Búsqueda pública
+        "/uploads/**",      // Imágenes subidas desde carpeta externa
+        "/marca/{idMarca}"  // Filtro por marca en catálogo público
     };
 
     public static final String[] USUARIO_URLS = {

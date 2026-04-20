@@ -3,6 +3,10 @@ package WGK.controller;
 import WGK.domain.Sneaker;
 import WGK.service.MarcaService;
 import WGK.service.SneakerService;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +23,7 @@ public class SneakerController {
     @Autowired
     private MarcaService marcaService;
 
+    // ── Listado admin ────────────────────────────────────────────────────
     @GetMapping("/listado")
     public String listado(Model model) {
         model.addAttribute("sneakers", sneakerService.getSneakers(false));
@@ -28,6 +33,7 @@ public class SneakerController {
         return "/sneaker/listado";
     }
 
+    // ── Formulario edición ───────────────────────────────────────────────
     @GetMapping("/modificar/{id}")
     public String modificar(@PathVariable Integer id, Model model) {
         Sneaker sneaker = sneakerService.getSneaker(id);
@@ -37,6 +43,7 @@ public class SneakerController {
         return "/sneaker/modifica";
     }
 
+    // ── Guardar ──────────────────────────────────────────────────────────
     @PostMapping("/guardar")
     public String guardar(Sneaker sneaker,
             @RequestParam("imagenFile") MultipartFile imagenFile) throws Exception {
@@ -44,9 +51,38 @@ public class SneakerController {
         return "redirect:/sneaker/listado";
     }
 
+    // ── Eliminar ─────────────────────────────────────────────────────────
     @PostMapping("/eliminar")
     public String eliminar(@RequestParam("idSneaker") Integer idSneaker) throws Exception {
         sneakerService.delete(idSneaker);
         return "redirect:/sneaker/listado";
+    }
+
+    // ── DETALLE público ──────────────────────────────────────────────────
+    /**
+     * Muestra la página de detalle de un sneaker.
+     * URL pública: GET /sneaker/detalle/{id}
+     * Se abre en nueva pestaña desde el catálogo.
+     */
+    @GetMapping("/detalle/{id}")
+    public String detalle(@PathVariable Integer id, Model model) {
+        Sneaker sneaker = sneakerService.getSneaker(id);
+        if (sneaker == null) {
+            return "redirect:/";
+        }
+
+        // Convertir el string de tallas "38,39,40,41,42" en una List<String>
+        // para poder iterar en Thymeleaf con th:each
+        List<String> tallasLista = Collections.emptyList();
+        if (sneaker.getTallas() != null && !sneaker.getTallas().isBlank()) {
+            tallasLista = Arrays.stream(sneaker.getTallas().split(","))
+                    .map(String::trim)
+                    .filter(t -> !t.isEmpty())
+                    .collect(Collectors.toList());
+        }
+
+        model.addAttribute("sneaker", sneaker);
+        model.addAttribute("tallasLista", tallasLista);
+        return "/sneaker/detalle";
     }
 }

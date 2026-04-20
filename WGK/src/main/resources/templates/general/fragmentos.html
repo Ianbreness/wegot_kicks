@@ -9,27 +9,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
         <link th:href="@{/webjars/font-awesome/css/all.css}" rel="stylesheet"/>
-        <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
         <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
         <style>
+            /* ════════════════════════════════════
+               DESIGN TOKENS
+            ════════════════════════════════════ */
             :root {
-                --ink:    #0c0c0c;
-                --ink2:   #181818;
-                --ink3:   #222222;
-                --line:   #2e2e2e;
+                --bg:     #111111;
+                --bg2:    #1a1a1a;
+                --bg3:    #242424;
+                --card:   #f5f5f5;
+                --line:   #2a2a2a;
                 --smoke:  #888888;
-                --paper:  #f2efe9;
-                --paper2: #e0ddd7;
-                --fire:   #ff1f1f;
-                --fire2:  #cc0000;
+                --dark:   #111111;
+                --white:  #ffffff;
+                --red:    #ff0000;
+                --red2:   #cc0000;
+                --green:  #22c55e;
                 --disp:   'Anton', sans-serif;
-                --body:   'DM Sans', sans-serif;
-                --ease:   cubic-bezier(.25,.46,.45,.94);
+                --body:   'Inter', sans-serif;
             }
 
+            /* ════════════════════════════════════
+               BASE
+            ════════════════════════════════════ */
             body {
-                background: var(--ink);
-                color: var(--paper);
+                background: var(--bg);
+                color: var(--white);
                 font-family: var(--body);
                 -webkit-font-smoothing: antialiased;
             }
@@ -38,516 +45,669 @@
                 color: inherit;
             }
             ::-webkit-scrollbar {
-                width: 3px;
+                width: 4px;
             }
             ::-webkit-scrollbar-thumb {
-                background: var(--fire);
+                background: var(--red);
+                border-radius: 2px;
             }
 
-            /* ── NAVBAR ── */
+            /* ════════════════════════════════════
+               TOP BAR
+            ════════════════════════════════════ */
+            .wgk-topbar {
+                background: var(--red);
+                color: #fff;
+                text-align: center;
+                font-size: 0.72rem;
+                font-weight: 600;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                padding: 7px 12px;
+            }
+
+            /* ════════════════════════════════════
+               NAVBAR
+            ════════════════════════════════════ */
             .wgk-nav {
-                background: var(--ink) !important;
+                background: var(--bg);
                 border-bottom: 1px solid var(--line);
-                padding: 0 !important;
                 position: sticky;
                 top: 0;
-                z-index: 999;
+                z-index: 1000;
             }
-            .wgk-nav > .container {
+            .wgk-nav-inner {
+                display: flex;
+                align-items: center;
                 height: 64px;
-                display: flex !important;
-                align-items: stretch !important;
-                flex-wrap: nowrap !important;
-                padding-left: 12px;
-                padding-right: 12px;
+                padding: 0 20px;
             }
             .wgk-logo {
                 font-family: var(--disp);
-                font-size: 1.8rem;
-                letter-spacing: 5px;
-                color: var(--paper) !important;
+                font-size: 1.75rem;
+                letter-spacing: 4px;
+                color: var(--white);
                 flex-shrink: 0;
-                padding-right: 24px;
-                border-right: 1px solid var(--line);
-                display: flex;
-                align-items: center;
-                height: 64px;
-                white-space: nowrap;
+                margin-right: 20px;
             }
             .wgk-logo em {
-                color: var(--fire);
+                color: var(--red);
                 font-style: normal;
             }
 
-            /* Custom nav row - bypasses Bootstrap collapse */
-            .wgk-nav-row {
-                display: flex !important;
-                align-items: stretch;
-                flex: 1;
-                justify-content: space-between;
+            /* Search */
+            .wgk-search-wrap {
+                position: relative;
+                flex-shrink: 0;
             }
-            .wgk-navlinks {
-                display: flex;
-                align-items: stretch;
-                gap: 0;
-                list-style: none;
-                margin: 0;
-                padding: 0 0 0 4px;
-                height: 64px;
+            .wgk-search {
+                width: 220px;
+                background: var(--bg3);
+                border: 1px solid var(--line);
+                color: var(--white);
+                border-radius: 8px;
+                padding: 8px 14px 8px 36px;
+                font-size: 0.82rem;
+                font-family: var(--body);
+                outline: none;
+                transition: border-color .2s, width .3s;
             }
-            .wgk-navlinks li {
-                display: flex;
-                align-items: stretch;
+            .wgk-search:focus {
+                border-color: var(--red);
+                width: 280px;
             }
-            .wgk-navlinks a {
-                display: flex;
-                align-items: center;
-                gap: 6px;
+            .wgk-search::placeholder {
                 color: var(--smoke);
-                font-size: 0.67rem;
-                font-weight: 700;
-                letter-spacing: 2px;
-                text-transform: uppercase;
-                padding: 0 13px;
-                border-bottom: 3px solid transparent;
-                transition: color .2s, border-color .2s;
-                white-space: nowrap;
             }
-            .wgk-navlinks a:hover {
-                color: var(--paper);
-                border-bottom-color: var(--fire);
+            .wgk-search-icon {
+                position: absolute;
+                left: 11px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--smoke);
+                font-size: 0.75rem;
+                pointer-events: none;
             }
 
+            /* Nav links (admin only — shown next to logo) */
+            .wgk-navlinks {
+                display: flex;
+                align-items: center;
+                gap: 2px;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                flex-shrink: 0;
+            }
+            .wgk-navlinks a {
+                color: var(--smoke);
+                font-size: 0.73rem;
+                font-weight: 600;
+                padding: 6px 10px;
+                border-radius: 6px;
+                transition: color .2s, background .2s;
+                white-space: nowrap;
+                display: inline-block;
+            }
+            .wgk-navlinks a:hover {
+                color: var(--white);
+                background: var(--bg3);
+            }
+
+            /* Right cluster */
             .wgk-nav-right {
                 display: flex;
                 align-items: center;
-                gap: 10px;
-                height: 64px;
+                gap: 8px;
+                margin-left: auto;
                 flex-shrink: 0;
             }
             .wgk-nav-cart {
                 color: var(--smoke);
-                font-size: 0.67rem;
-                font-weight: 700;
-                letter-spacing: 2px;
-                text-transform: uppercase;
+                font-size: 0.75rem;
+                font-weight: 600;
                 display: flex;
                 align-items: center;
                 gap: 6px;
-                padding: 0 10px;
-                height: 64px;
-                border-bottom: 3px solid transparent;
-                transition: color .2s, border-color .2s;
+                padding: 7px 12px;
+                border-radius: 6px;
+                border: 1px solid var(--line);
+                transition: all .2s;
                 white-space: nowrap;
             }
             .wgk-nav-cart:hover {
-                color: var(--paper);
-                border-bottom-color: var(--fire);
+                color: var(--white);
+                border-color: var(--smoke);
             }
-            @media (max-width: 768px) {
-                .wgk-nav-row {
-                    display: none !important;
-                }
-                .wgk-nav-row.open {
-                    display: flex !important;
-                    flex-direction: column;
-                    height: auto;
-                    position: absolute;
-                    top: 64px;
-                    left: 0;
-                    right: 0;
-                    background: var(--ink);
-                    border-bottom: 1px solid var(--line);
-                    padding: 12px 16px;
-                    z-index: 500;
-                }
-                .wgk-nav-row.open .wgk-navlinks,
-                .wgk-nav-row.open .wgk-nav-right {
-                    flex-direction: column;
-                    height: auto;
-                    padding: 0;
-                }
-                .wgk-nav-row.open .wgk-navlinks li {
-                    height: auto;
-                }
-                .wgk-nav-row.open .wgk-navlinks a,
-                .wgk-nav-row.open .wgk-nav-cart {
-                    height: auto;
-                    padding: 10px 0;
-                    border-bottom: none;
-                }
-                .wgk-mob-toggle {
-                    display: flex !important;
-                }
-            }
-            .wgk-mob-toggle {
-                display: none;
-                background: none;
-                border: 1px solid var(--line);
-                color: var(--smoke);
-                padding: 6px 10px;
-                border-radius: 3px;
-                cursor: pointer;
-                align-items: center;
-                justify-content: center;
-                align-self: center;
-                margin-left: auto;
-            }
-            .wgk-btn-login {
-                background: var(--fire);
-                color: #fff !important;
-                font-size: 0.65rem;
+            .wgk-btn-nav-login {
+                background: var(--white);
+                color: var(--dark);
+                font-size: 0.75rem;
                 font-weight: 700;
-                letter-spacing: 2px;
-                text-transform: uppercase;
-                padding: 9px 18px;
-                border-radius: 3px;
+                padding: 8px 18px;
+                border-radius: 6px;
                 border: none;
                 cursor: pointer;
                 transition: background .2s;
+                white-space: nowrap;
+                display: inline-block;
+            }
+            .wgk-btn-nav-login:hover {
+                background: #e0e0e0;
+                color: var(--dark);
+            }
+            .wgk-user-name {
+                color: var(--red);
+                font-size: 0.72rem;
+                font-weight: 700;
+            }
+            .wgk-btn-nav-logout {
+                background: transparent;
+                color: var(--smoke);
+                font-size: 0.72rem;
+                font-weight: 600;
+                padding: 7px 14px;
+                border-radius: 6px;
+                border: 1px solid var(--line);
+                cursor: pointer;
+                transition: all .2s;
+            }
+            .wgk-btn-nav-logout:hover {
+                border-color: var(--smoke);
+                color: var(--white);
+            }
+
+            /* ════════════════════════════════════
+               SUB-NAV (categories)
+            ════════════════════════════════════ */
+            .wgk-subnav {
+                background: var(--bg2);
+                border-bottom: 1px solid var(--line);
+                overflow-x: auto;
+                scrollbar-width: none;
+            }
+            .wgk-subnav::-webkit-scrollbar {
+                display: none;
+            }
+            .wgk-subnav-inner {
+                display: flex;
+                align-items: center;
+                height: 42px;
+                padding: 0 24px;
+                white-space: nowrap;
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            .wgk-subnav-link {
+                color: var(--smoke);
+                font-size: 0.75rem;
+                font-weight: 600;
+                padding: 0 14px;
+                height: 42px;
                 display: inline-flex;
+                align-items: center;
+                border-bottom: 2px solid transparent;
+                transition: color .2s, border-color .2s;
+            }
+            .wgk-subnav-link:hover {
+                color: var(--white);
+                border-bottom-color: var(--red);
+            }
+            .wgk-subnav-link.active {
+                color: var(--white);
+                border-bottom-color: var(--red);
+            }
+            .wgk-subnav-link.drops {
+                color: var(--red);
+                font-weight: 700;
+            }
+            .wgk-subnav-div {
+                width: 1px;
+                height: 16px;
+                background: var(--line);
+                margin: 0 6px;
+                flex-shrink: 0;
+            }
+            .wgk-subnav-admin {
+                margin-left: auto;
+                display: flex;
                 align-items: center;
                 gap: 6px;
             }
-            .wgk-btn-login:hover {
-                background: var(--fire2);
-            }
-            .wgk-user-name {
-                color: var(--fire);
-                font-size: 0.65rem;
-                font-weight: 700;
-                letter-spacing: 2px;
-                text-transform: uppercase;
-            }
-            .wgk-btn-logout {
-                background: transparent;
+            .wgk-subnav-admin a {
                 color: var(--smoke);
-                font-size: 0.65rem;
-                font-weight: 700;
-                letter-spacing: 2px;
-                text-transform: uppercase;
-                padding: 8px 14px;
-                border-radius: 3px;
-                border: 1px solid var(--line);
-                cursor: pointer;
-                transition: border-color .2s, color .2s;
-            }
-            .wgk-btn-logout:hover {
-                border-color: var(--smoke);
-                color: var(--paper);
-            }
-
-            /* dropdown */
-            .wgk-dd {
-                position: relative;
-                display: flex;
-                align-items: stretch;
-            }
-            .wgk-dd-menu {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                background: var(--ink2);
-                border: 1px solid var(--line);
+                font-size: 0.7rem;
+                font-weight: 600;
+                padding: 4px 12px;
                 border-radius: 4px;
-                min-width: 160px;
-                padding: 6px 0;
-                z-index: 200;
-            }
-            .wgk-dd:hover .wgk-dd-menu {
-                display: block;
-            }
-            .wgk-dd-menu a {
-                display: flex;
+                border: 1px solid var(--line);
+                transition: all .2s;
+                display: inline-flex;
                 align-items: center;
-                gap: 8px;
-                padding: 10px 16px;
-                color: var(--smoke);
-                font-size: 0.68rem;
-                font-weight: 700;
-                letter-spacing: 1.5px;
-                text-transform: uppercase;
-                border-bottom: none !important;
-                transition: color .2s, background .2s;
+                gap: 5px;
             }
-            .wgk-dd-menu a:hover {
-                color: var(--paper);
-                background: var(--ink3);
+            .wgk-subnav-admin a:hover {
+                color: var(--white);
+                border-color: var(--smoke);
             }
 
-            /* ── HERO ── */
-            .wgk-hero {
-                background: var(--ink);
-                border-bottom: 1px solid var(--line);
-                padding: 60px 0 50px;
+            /* ════════════════════════════════════
+               CAROUSEL
+            ════════════════════════════════════ */
+            .wgk-carousel {
                 position: relative;
                 overflow: hidden;
             }
-            .wgk-hero::after {
-                content: 'KICKS';
-                font-family: var(--disp);
-                font-size: 26vw;
-                color: transparent;
-                -webkit-text-stroke: 1px rgba(255,255,255,.035);
-                position: absolute;
-                right: -2vw;
-                bottom: -3vw;
-                line-height: 1;
-                pointer-events: none;
-                user-select: none;
-            }
-            .wgk-hero-badge {
-                display: inline-flex;
+            .wgk-slide {
+                display: none;
+                min-height: 340px;
                 align-items: center;
-                gap: 6px;
-                background: var(--fire);
-                color: #fff;
-                font-size: 0.6rem;
+            }
+            .wgk-slide.active {
+                display: flex;
+            }
+            .wgk-slide-content {
+                padding: 48px 56px;
+                flex: 1;
+                max-width: 52%;
+                position: relative;
+                z-index: 2;
+            }
+            .wgk-slide-eye {
+                font-size: 0.62rem;
                 font-weight: 700;
                 letter-spacing: 3px;
                 text-transform: uppercase;
-                padding: 5px 14px;
-                margin-bottom: 22px;
+                color: var(--red);
+                margin-bottom: 12px;
             }
-            .wgk-hero h1 {
+            .wgk-slide-title {
                 font-family: var(--disp);
-                font-size: clamp(4rem, 10vw, 9rem);
-                letter-spacing: 4px;
-                line-height: 0.9;
-                color: var(--paper);
+                font-size: clamp(2.5rem, 5vw, 4.5rem);
+                letter-spacing: 3px;
+                line-height: 0.93;
                 text-transform: uppercase;
-                margin-bottom: 24px;
+                color: var(--white);
+                margin-bottom: 10px;
             }
-            .wgk-hero h1 em {
-                color: var(--fire);
-                font-style: normal;
-            }
-            .wgk-hero-sub {
+            .wgk-slide-sub {
                 color: var(--smoke);
-                font-size: 0.7rem;
-                letter-spacing: 4px;
-                text-transform: uppercase;
+                font-size: 0.9rem;
+                font-weight: 400;
+                margin-bottom: 28px;
+            }
+            .wgk-slide-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                background: var(--white);
+                color: var(--dark);
+                font-weight: 700;
+                font-size: 0.82rem;
+                padding: 11px 26px;
+                border-radius: 6px;
+                border: none;
+                cursor: pointer;
+                transition: background .2s;
+            }
+            .wgk-slide-btn:hover {
+                background: #e0e0e0;
+                color: var(--dark);
+            }
+            .wgk-slide-img {
+                flex: 1;
                 display: flex;
                 align-items: center;
-                gap: 14px;
-                flex-wrap: wrap;
+                justify-content: center;
+                padding: 24px 32px;
+                position: relative;
+                z-index: 2;
             }
-            .wgk-dot {
-                width: 3px;
-                height: 3px;
-                background: var(--fire);
-                border-radius: 50%;
+            .wgk-slide-img img {
+                max-height: 290px;
+                max-width: 100%;
+                object-fit: contain;
+                filter: drop-shadow(0 24px 48px rgba(0,0,0,.7));
+                transform: rotate(-6deg);
+                transition: transform .6s;
+            }
+            .wgk-slide.active .wgk-slide-img img {
+                transform: rotate(-3deg) translateY(-4px);
             }
 
-            /* ── TABS ── */
-            .wgk-tabs {
+            /* Vertical brand labels */
+            .wgk-carousel-brands {
+                position: absolute;
+                right: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+                z-index: 10;
+            }
+            .wgk-carousel-brands span {
+                writing-mode: vertical-rl;
+                font-size: 0.58rem;
+                font-weight: 700;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                color: rgba(255,255,255,.14);
+                padding: 8px 5px;
+                border-left: 1px solid rgba(255,255,255,.06);
+                cursor: pointer;
+                transition: color .2s, border-color .2s;
+            }
+            .wgk-carousel-brands span.active {
+                color: rgba(255,255,255,.6);
+                border-left-color: var(--red);
+            }
+
+            /* Controls */
+            .wgk-ctrl {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                background: rgba(255,255,255,.08);
+                border: 1px solid rgba(255,255,255,.1);
+                color: var(--white);
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: background .2s;
+                z-index: 10;
+                font-size: 1rem;
+            }
+            .wgk-ctrl:hover {
+                background: rgba(255,255,255,.2);
+            }
+            .wgk-ctrl.prev {
+                left: 16px;
+            }
+            .wgk-ctrl.next {
+                right: 56px;
+            }
+            .wgk-dots {
+                position: absolute;
+                bottom: 14px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                gap: 6px;
+                z-index: 10;
+            }
+            .wgk-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: rgba(255,255,255,.25);
+                border: none;
+                cursor: pointer;
+                transition: all .25s;
+                padding: 0;
+            }
+            .wgk-dot.active {
+                background: var(--white);
+                width: 18px;
+                border-radius: 3px;
+            }
+
+            /* ════════════════════════════════════
+               PRODUCT GRID — responsive CSS grid
+            ════════════════════════════════════ */
+            .wgk-product-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            @media (min-width: 576px) {
+                .wgk-product-grid {
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 14px;
+                }
+            }
+            @media (min-width: 992px) {
+                .wgk-product-grid {
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 16px;
+                }
+            }
+            @media (min-width: 1400px) {
+                .wgk-product-grid {
+                    grid-template-columns: repeat(5, 1fr);
+                    gap: 16px;
+                }
+            }
+
+            /* ════════════════════════════════════
+               FILTER TABS
+            ════════════════════════════════════ */
+            .wgk-filter-row {
                 display: flex;
                 gap: 8px;
                 flex-wrap: wrap;
-                padding: 32px 0 4px;
+                margin-bottom: 28px;
             }
-            .wgk-tab {
+            .wgk-filter-btn {
+                font-size: 0.75rem;
+                font-weight: 600;
                 color: var(--smoke);
-                font-size: 0.67rem;
-                font-weight: 700;
-                letter-spacing: 2px;
-                text-transform: uppercase;
-                padding: 8px 20px;
+                padding: 6px 16px;
                 border: 1px solid var(--line);
-                border-radius: 3px;
+                border-radius: 20px;
                 background: transparent;
-                transition: all .2s var(--ease);
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
+                cursor: pointer;
+                transition: all .2s;
+                display: inline-block;
             }
-            .wgk-tab:hover {
-                color: var(--paper);
+            .wgk-filter-btn:hover {
+                color: var(--white);
                 border-color: var(--smoke);
             }
-            .wgk-tab.active {
-                background: var(--paper);
-                color: var(--ink);
-                border-color: var(--paper);
-            }
-
-            /* ── SECTION HEADER ── */
-            .wgk-sec-head {
-                display: flex;
-                align-items: flex-end;
-                justify-content: space-between;
-                margin-bottom: 32px;
-                padding-bottom: 16px;
-                border-bottom: 1px solid var(--line);
-            }
-            .wgk-sec-title {
-                font-family: var(--disp);
-                font-size: 2.5rem;
-                letter-spacing: 4px;
-                color: var(--paper);
-                text-transform: uppercase;
-                line-height: 1;
-            }
-            .wgk-count {
-                color: var(--smoke);
-                font-size: 0.65rem;
+            .wgk-filter-btn.active {
+                background: var(--white);
+                color: var(--dark);
+                border-color: var(--white);
                 font-weight: 700;
-                letter-spacing: 2px;
-                text-transform: uppercase;
             }
 
-            /* ── PRODUCT CARD ── */
+            /* ════════════════════════════════════
+               PRODUCT CARDS — compact StockX style
+            ════════════════════════════════════ */
             .wgk-card {
-                background: var(--ink2);
-                border: 1px solid var(--line);
-                border-radius: 4px;
+                background: #fff;
+                border-radius: 12px;
                 overflow: hidden;
+                transition: transform .22s, box-shadow .22s;
+                cursor: pointer;
+                position: relative;
                 display: flex;
                 flex-direction: column;
-                height: 100%;
-                transition: border-color .3s var(--ease), transform .3s var(--ease), box-shadow .3s var(--ease);
+                border: 1px solid #e8e8e8;
             }
             .wgk-card:hover {
-                border-color: var(--fire);
-                transform: translateY(-6px);
-                box-shadow: 0 24px 60px rgba(255,31,31,.1);
+                transform: translateY(-4px);
+                box-shadow: 0 12px 32px rgba(0,0,0,.18);
             }
-            .wgk-card-img-wrap {
-                overflow: hidden;
-                position: relative;
-            }
-            .wgk-card-img-wrap::before {
-                content: '';
+            .wgk-card-fav {
                 position: absolute;
-                inset: 0;
-                background: linear-gradient(to top, rgba(12,12,12,.5) 0%, transparent 50%);
-                z-index: 1;
-                opacity: 0;
-                transition: opacity .3s;
+                top: 8px;
+                right: 8px;
+                background: rgba(255,255,255,.9);
+                border: none;
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                color: #ccc;
+                font-size: 0.78rem;
+                transition: color .2s;
+                z-index: 2;
+                box-shadow: 0 1px 4px rgba(0,0,0,.12);
             }
-            .wgk-card:hover .wgk-card-img-wrap::before {
-                opacity: 1;
+            .wgk-card-fav:hover {
+                color: var(--red);
+            }
+            /* Image area — square, light grey bg */
+            .wgk-card-img-wrap {
+                background: #f4f4f4;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                aspect-ratio: 1 / 1;
+                overflow: hidden;
+                padding: 16px;
             }
             .wgk-card-img {
                 width: 100%;
-                height: 230px;
-                object-fit: cover;
-                display: block;
-                background: var(--ink3);
-                transition: transform .5s var(--ease);
+                height: 100%;
+                object-fit: contain;
+                transition: transform .35s;
             }
             .wgk-card:hover .wgk-card-img {
-                transform: scale(1.08);
+                transform: scale(1.06) rotate(-2deg);
             }
-            .wgk-card-body {
-                padding: 16px 18px 10px;
+            /* Info area */
+            .wgk-card-info {
+                padding: 10px 12px 4px;
+                background: #fff;
                 flex: 1;
-            }
-            .wgk-card-badges {
                 display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 10px;
+                flex-direction: column;
             }
-            .wgk-badge-brand {
-                font-size: 0.57rem;
+            .wgk-card-brand {
+                font-size: 0.6rem;
                 font-weight: 700;
-                letter-spacing: 2px;
+                color: #888;
                 text-transform: uppercase;
-                background: var(--fire);
-                color: #fff;
-                padding: 3px 8px;
-                border-radius: 2px;
-            }
-            .wgk-badge-ok {
-                font-size: 0.57rem;
-                font-weight: 700;
-                letter-spacing: 1.5px;
-                text-transform: uppercase;
-                background: rgba(74,222,128,.1);
-                color: #4ade80;
-                border: 1px solid rgba(74,222,128,.2);
-                padding: 3px 8px;
-                border-radius: 2px;
-            }
-            .wgk-badge-out {
-                font-size: 0.57rem;
-                font-weight: 700;
-                letter-spacing: 1.5px;
-                text-transform: uppercase;
-                background: rgba(255,31,31,.1);
-                color: var(--fire);
-                border: 1px solid rgba(255,31,31,.2);
-                padding: 3px 8px;
-                border-radius: 2px;
+                letter-spacing: 0.8px;
+                margin-bottom: 2px;
             }
             .wgk-card-name {
-                font-family: var(--disp);
-                font-size: 1.2rem;
-                letter-spacing: 2px;
-                color: var(--paper);
-                text-transform: uppercase;
-                line-height: 1.05;
-                margin-bottom: 6px;
+                font-size: 0.82rem;
+                font-weight: 600;
+                color: #111;
+                line-height: 1.25;
+                margin-bottom: 4px;
+                flex: 1;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
             }
             .wgk-card-sizes {
-                color: var(--smoke);
-                font-size: 0.7rem;
-                letter-spacing: .3px;
+                font-size: 0.64rem;
+                color: #aaa;
+                margin-bottom: 6px;
             }
-            .wgk-card-foot {
+            .wgk-card-price-label {
+                font-size: 0.58rem;
+                color: #aaa;
+                font-weight: 500;
+                margin-bottom: 0;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .wgk-card-price {
+                font-size: 1.05rem;
+                font-weight: 800;
+                color: #111;
+                line-height: 1.1;
+                margin-bottom: 2px;
+            }
+            .wgk-card-stock-ok {
+                display: inline-block;
+                font-size: 0.58rem;
+                font-weight: 700;
+                padding: 2px 6px;
+                border-radius: 3px;
+                background: #e8f5e9;
+                color: #2e7d32;
+                margin-bottom: 6px;
+            }
+            .wgk-card-stock-out {
+                display: inline-block;
+                font-size: 0.58rem;
+                font-weight: 700;
+                padding: 2px 6px;
+                border-radius: 3px;
+                background: #fce4e4;
+                color: #c62828;
+                margin-bottom: 6px;
+            }
+            .wgk-card-btn {
                 display: flex;
-                justify-content: space-between;
                 align-items: center;
-                padding: 14px 18px;
-                border-top: 1px solid var(--line);
-            }
-            .wgk-price {
-                font-family: var(--disp);
-                font-size: 1.55rem;
-                letter-spacing: 1px;
-                color: var(--paper);
-                line-height: 1;
-            }
-            .wgk-btn-add {
-                background: var(--fire);
+                justify-content: center;
+                gap: 5px;
+                width: 100%;
+                background: #111;
                 color: #fff;
                 border: none;
-                font-size: 0.63rem;
+                padding: 9px;
+                font-size: 0.72rem;
                 font-weight: 700;
-                letter-spacing: 2px;
-                text-transform: uppercase;
-                padding: 9px 16px;
-                border-radius: 3px;
                 cursor: pointer;
-                transition: background .2s, transform .15s;
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
+                transition: background .2s;
+                border-radius: 0 0 10px 10px;
+                letter-spacing: 0.3px;
             }
-            .wgk-btn-add:hover {
-                background: var(--fire2);
-                transform: scale(1.05);
+            .wgk-card-btn:hover {
+                background: var(--red);
             }
-            .wgk-btn-add:disabled {
-                background: var(--line);
-                color: var(--smoke);
+            .wgk-card-btn:disabled {
+                background: #ccc;
+                color: #888;
                 cursor: not-allowed;
-                transform: none;
             }
 
-            /* ── BUTTONS ── */
-            .wgk-btn {
-                background: var(--paper);
-                color: var(--ink);
-                border: none;
-                font-size: 0.68rem;
+            /* ════════════════════════════════════
+               SECTION HEADERS
+            ════════════════════════════════════ */
+            .wgk-sec-head {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+            }
+            .wgk-sec-title {
+                font-size: 1rem;
                 font-weight: 700;
-                letter-spacing: 2px;
-                text-transform: uppercase;
-                padding: 11px 24px;
-                border-radius: 3px;
+                color: var(--white);
+            }
+            .wgk-count {
+                color: var(--smoke);
+                font-size: 0.78rem;
+                font-weight: 500;
+            }
+            .wgk-sec-see-all {
+                color: var(--smoke);
+                font-size: 0.78rem;
+                font-weight: 600;
+                transition: color .2s;
+            }
+            .wgk-sec-see-all:hover {
+                color: var(--white);
+            }
+
+            /* ════════════════════════════════════
+               GENERAL BUTTONS
+            ════════════════════════════════════ */
+            .wgk-btn {
+                background: var(--white);
+                color: var(--dark);
+                border: none;
+                font-size: 0.78rem;
+                font-weight: 700;
+                padding: 10px 22px;
+                border-radius: 6px;
                 cursor: pointer;
                 transition: background .2s;
                 display: inline-flex;
@@ -555,40 +715,57 @@
                 gap: 8px;
             }
             .wgk-btn:hover {
-                background: var(--paper2);
-                color: var(--ink);
+                background: #e0e0e0;
+                color: var(--dark);
             }
-            .wgk-btn-ghost {
-                background: transparent;
-                color: var(--paper);
-                border: 1px solid var(--line);
-                font-size: 0.68rem;
+
+            .wgk-btn-dark {
+                background: var(--dark);
+                color: var(--white);
+                border: none;
+                font-size: 0.78rem;
                 font-weight: 700;
-                letter-spacing: 2px;
-                text-transform: uppercase;
-                padding: 10px 24px;
-                border-radius: 3px;
+                padding: 10px 22px;
+                border-radius: 6px;
                 cursor: pointer;
-                transition: border-color .2s, color .2s;
+                transition: background .2s;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .wgk-btn-dark:hover {
+                background: #333;
+                color: var(--white);
+            }
+
+            .wgk-btn-outline {
+                background: transparent;
+                color: var(--white);
+                border: 1px solid var(--line);
+                font-size: 0.78rem;
+                font-weight: 600;
+                padding: 9px 22px;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all .2s;
                 display: inline-flex;
                 align-items: center;
                 gap: 8px;
                 text-decoration: none;
             }
-            .wgk-btn-ghost:hover {
-                border-color: var(--paper);
-                color: var(--paper);
+            .wgk-btn-outline:hover {
+                border-color: var(--smoke);
+                color: var(--white);
             }
-            .wgk-btn-fire {
-                background: var(--fire);
+
+            .wgk-btn-red {
+                background: var(--red);
                 color: #fff;
                 border: none;
-                font-size: 0.68rem;
+                font-size: 0.78rem;
                 font-weight: 700;
-                letter-spacing: 2px;
-                text-transform: uppercase;
-                padding: 11px 24px;
-                border-radius: 3px;
+                padding: 10px 22px;
+                border-radius: 6px;
                 cursor: pointer;
                 transition: background .2s;
                 display: inline-flex;
@@ -596,63 +773,67 @@
                 gap: 8px;
                 text-decoration: none;
             }
-            .wgk-btn-fire:hover {
-                background: var(--fire2);
+            .wgk-btn-red:hover {
+                background: var(--red2);
                 color: #fff;
             }
 
-            /* ── PANEL (admin) ── */
+            /* ════════════════════════════════════
+               ADMIN PANEL
+            ════════════════════════════════════ */
             .wgk-panel {
-                background: var(--ink2);
+                background: var(--bg2);
                 border: 1px solid var(--line);
-                border-radius: 6px;
+                border-radius: 8px;
                 overflow: hidden;
             }
             .wgk-panel-head {
-                background: var(--ink3);
+                background: var(--bg3);
                 border-bottom: 1px solid var(--line);
-                padding: 18px 24px;
+                padding: 16px 22px;
                 display: flex;
                 align-items: center;
                 gap: 10px;
             }
             .wgk-panel-head h5 {
                 font-family: var(--disp);
-                font-size: 1.3rem;
-                letter-spacing: 3px;
-                color: var(--paper);
+                font-size: 1.2rem;
+                letter-spacing: 2px;
+                color: var(--white);
                 text-transform: uppercase;
                 margin: 0;
             }
-            .wgk-panel-head .wgk-panel-icon {
-                color: var(--fire);
+            .wgk-panel-icon {
+                color: var(--red);
             }
             .wgk-panel-body {
-                padding: 28px 24px;
+                padding: 24px;
             }
             .wgk-panel-foot {
-                background: var(--ink);
+                background: #111;
                 border-top: 1px solid var(--line);
-                padding: 16px 24px;
+                padding: 14px 22px;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
             }
 
-            /* ── TABLES ── */
+            /* ════════════════════════════════════
+               TABLES
+            ════════════════════════════════════ */
             .wgk-table {
-                color: var(--paper);
+                color: var(--white);
                 width: 100%;
                 border-collapse: collapse;
             }
             .wgk-table thead th {
-                background: var(--ink3);
+                background: var(--bg3);
                 color: var(--smoke);
-                font-size: 0.6rem;
+                font-size: 0.65rem;
                 font-weight: 700;
-                letter-spacing: 2.5px;
+                letter-spacing: 1.5px;
                 text-transform: uppercase;
-                padding: 14px;
+                padding: 12px 14px;
                 border-bottom: 1px solid var(--line);
                 white-space: nowrap;
             }
@@ -664,77 +845,155 @@
                 border-bottom: none;
             }
             .wgk-table tbody tr:hover {
-                background: rgba(255,255,255,.025);
+                background: rgba(255,255,255,.03);
             }
             .wgk-table td {
-                padding: 13px 14px;
+                padding: 12px 14px;
                 font-size: 0.87rem;
                 vertical-align: middle;
             }
 
-            /* ── FORMS ── */
+            /* ════════════════════════════════════
+               FORMS
+            ════════════════════════════════════ */
             .wgk-label {
                 display: block;
                 color: var(--smoke);
-                font-size: 0.6rem;
+                font-size: 0.65rem;
                 font-weight: 700;
-                letter-spacing: 2px;
+                letter-spacing: 1.5px;
                 text-transform: uppercase;
-                margin-bottom: 7px;
+                margin-bottom: 6px;
             }
             .wgk-input {
                 width: 100%;
-                background: var(--ink) !important;
+                background: #111 !important;
                 border: 1px solid var(--line) !important;
-                color: var(--paper) !important;
-                border-radius: 4px;
-                padding: 11px 14px;
+                color: var(--white) !important;
+                border-radius: 6px;
+                padding: 10px 14px;
                 font-size: 0.88rem;
                 font-family: var(--body);
-                transition: border-color .2s, box-shadow .2s;
+                transition: border-color .2s;
                 display: block;
+                outline: none;
             }
             .wgk-input:focus {
-                outline: none;
-                border-color: var(--fire) !important;
-                box-shadow: 0 0 0 3px rgba(255,31,31,.12) !important;
-                background: var(--ink) !important;
-                color: var(--paper) !important;
+                border-color: var(--red) !important;
+                box-shadow: 0 0 0 3px rgba(255,0,0,.1) !important;
             }
             .wgk-input::placeholder {
-                color: var(--line);
+                color: #444;
             }
             .wgk-input option {
-                background: var(--ink2);
-                color: var(--paper);
+                background: var(--bg2);
+                color: var(--white);
             }
             .wgk-hint {
                 color: var(--smoke);
-                font-size: 0.68rem;
+                font-size: 0.7rem;
                 margin-top: 5px;
             }
-
             input[type="checkbox"] {
-                accent-color: var(--fire);
+                accent-color: var(--red);
                 cursor: pointer;
                 width: 15px;
                 height: 15px;
             }
             .wgk-check-label {
                 color: var(--smoke);
-                font-size: 0.67rem;
-                font-weight: 700;
-                letter-spacing: 1.5px;
+                font-size: 0.72rem;
+                font-weight: 600;
+                letter-spacing: 1px;
                 text-transform: uppercase;
                 margin-left: 8px;
                 cursor: pointer;
                 vertical-align: middle;
             }
 
-            /* ── LOGIN ── */
+            /* ════════════════════════════════════
+               BADGES
+            ════════════════════════════════════ */
+            .wgk-badge-brand {
+                font-size: 0.6rem;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                background: var(--red);
+                color: #fff;
+                padding: 3px 8px;
+                border-radius: 3px;
+            }
+            .wgk-badge-ok {
+                font-size: 0.6rem;
+                font-weight: 700;
+                background: rgba(34,197,94,.12);
+                color: var(--green);
+                border: 1px solid rgba(34,197,94,.25);
+                padding: 3px 8px;
+                border-radius: 3px;
+            }
+            .wgk-badge-out {
+                font-size: 0.6rem;
+                font-weight: 700;
+                background: rgba(255,0,0,.1);
+                color: var(--red);
+                border: 1px solid rgba(255,0,0,.2);
+                padding: 3px 8px;
+                border-radius: 3px;
+            }
+
+            /* ════════════════════════════════════
+               MODAL
+            ════════════════════════════════════ */
+            .modal-content {
+                background: var(--bg2) !important;
+                border: 1px solid var(--line) !important;
+                color: var(--white) !important;
+                border-radius: 8px;
+            }
+            .modal-header {
+                background: var(--bg3) !important;
+                border-bottom: 1px solid var(--line) !important;
+            }
+            .modal-title {
+                font-weight: 700;
+                font-size: 0.95rem;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                color: var(--white);
+            }
+            .modal-header .btn-close {
+                filter: invert(1) brightness(.5);
+            }
+            .modal-footer {
+                background: #111 !important;
+                border-top: 1px solid var(--line) !important;
+            }
+
+            /* ════════════════════════════════════
+               TOAST
+            ════════════════════════════════════ */
+            .toast {
+                background: var(--bg2) !important;
+                border: 1px solid var(--line) !important;
+                color: var(--white) !important;
+            }
+            .toast-header {
+                background: var(--bg3) !important;
+                border-bottom: 1px solid var(--line) !important;
+                color: var(--white) !important;
+            }
+            .toast-header .btn-close {
+                filter: invert(1) brightness(.5);
+            }
+
+            /* ════════════════════════════════════
+               LOGIN PAGE
+            ════════════════════════════════════ */
             .wgk-login-page {
-                min-height: calc(100vh - 64px);
-                background: var(--ink);
+                min-height: calc(100vh - 108px);
+                background: var(--bg);
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -747,20 +1006,20 @@
                 font-family: var(--disp);
                 font-size: 52vw;
                 color: transparent;
-                -webkit-text-stroke: 1px rgba(255,255,255,.022);
+                -webkit-text-stroke: 1px rgba(255,255,255,.025);
                 position: absolute;
                 left: 50%;
                 top: 50%;
-                transform: translate(-50%,-50%);
+                transform: translate(-50%, -50%);
                 pointer-events: none;
                 user-select: none;
                 letter-spacing: -4vw;
             }
             .wgk-login-card {
-                background: var(--ink2);
+                background: var(--bg2);
                 border: 1px solid var(--line);
-                border-radius: 6px;
-                padding: 50px 44px;
+                border-radius: 10px;
+                padding: 44px 40px;
                 width: 100%;
                 max-width: 400px;
                 position: relative;
@@ -768,190 +1027,148 @@
             }
             .wgk-login-logo {
                 font-family: var(--disp);
-                font-size: 3.2rem;
-                letter-spacing: 8px;
-                color: var(--paper);
+                font-size: 2.8rem;
+                letter-spacing: 6px;
+                color: var(--white);
                 display: block;
                 text-align: center;
                 margin-bottom: 4px;
             }
             .wgk-login-logo em {
-                color: var(--fire);
+                color: var(--red);
                 font-style: normal;
             }
             .wgk-login-sub {
                 text-align: center;
                 color: var(--smoke);
-                font-size: 0.63rem;
-                font-weight: 700;
-                letter-spacing: 3px;
-                text-transform: uppercase;
-                margin-bottom: 40px;
+                font-size: 0.75rem;
+                font-weight: 500;
+                margin-bottom: 36px;
             }
             .wgk-alert-error {
-                background: rgba(255,31,31,.08);
-                border: 1px solid rgba(255,31,31,.25);
+                background: rgba(255,0,0,.08);
+                border: 1px solid rgba(255,0,0,.2);
                 color: #ff6b6b;
-                border-radius: 4px;
+                border-radius: 6px;
                 padding: 12px 16px;
-                font-size: 0.8rem;
+                font-size: 0.82rem;
                 text-align: center;
                 margin-top: 16px;
             }
 
-            /* ── CARRITO ── */
+            /* ════════════════════════════════════
+               CARRITO
+            ════════════════════════════════════ */
             .wgk-cart-summary {
-                background: var(--ink2);
+                background: var(--bg2);
                 border: 1px solid var(--line);
-                border-radius: 6px;
-                padding: 28px;
+                border-radius: 8px;
+                padding: 24px;
                 position: sticky;
-                top: 80px;
+                top: 108px;
             }
             .wgk-cart-title {
-                font-family: var(--disp);
-                font-size: 1.1rem;
-                letter-spacing: 3px;
-                color: var(--paper);
+                font-size: 0.85rem;
+                font-weight: 700;
+                color: var(--white);
                 text-transform: uppercase;
-                margin-bottom: 20px;
-                padding-bottom: 16px;
+                letter-spacing: 1px;
+                margin-bottom: 16px;
+                padding-bottom: 14px;
                 border-bottom: 1px solid var(--line);
             }
             .wgk-cart-row {
                 display: flex;
                 justify-content: space-between;
                 margin-bottom: 10px;
-                font-size: 0.84rem;
+                font-size: 0.85rem;
             }
             .wgk-cart-row span:first-child {
                 color: var(--smoke);
             }
             .wgk-cart-total {
-                font-family: var(--disp);
-                font-size: 2.8rem;
-                letter-spacing: 2px;
-                color: var(--paper);
+                font-size: 2.2rem;
+                font-weight: 800;
+                color: var(--white);
                 line-height: 1;
             }
             hr.wgk-hr {
                 border-color: var(--line);
                 opacity: 1;
-                margin: 16px 0;
+                margin: 14px 0;
             }
 
-            /* ── EMPTY STATE ── */
+            /* ════════════════════════════════════
+               EMPTY STATE
+            ════════════════════════════════════ */
             .wgk-empty {
                 text-align: center;
                 padding: 80px 20px;
             }
             .wgk-empty i {
                 color: var(--line);
-                font-size: 3.5rem;
-                margin-bottom: 20px;
+                font-size: 3rem;
+                margin-bottom: 16px;
                 display: block;
             }
             .wgk-empty h5 {
-                font-family: var(--disp);
-                font-size: 1.8rem;
-                letter-spacing: 3px;
-                color: var(--paper);
-                text-transform: uppercase;
+                font-weight: 700;
+                color: var(--white);
                 margin-bottom: 8px;
+                font-size: 1.1rem;
             }
             .wgk-empty p {
                 color: var(--smoke);
-                font-size: 0.84rem;
+                font-size: 0.85rem;
             }
 
-            /* ── MODAL ── */
-            .modal-content {
-                background: var(--ink2) !important;
-                border: 1px solid var(--line) !important;
-                color: var(--paper) !important;
-                border-radius: 6px;
-            }
-            .modal-header {
-                background: var(--ink3) !important;
-                border-bottom: 1px solid var(--line) !important;
-            }
-            .modal-title {
-                font-family: var(--disp);
-                font-size: 1.2rem;
-                letter-spacing: 3px;
-                text-transform: uppercase;
-                color: var(--paper);
-            }
-            .modal-header .btn-close {
-                filter: invert(1) brightness(.5);
-            }
-            .modal-body {
-                padding: 24px;
-            }
-            .modal-footer {
-                background: var(--ink) !important;
-                border-top: 1px solid var(--line) !important;
-            }
-
-            /* ── TOAST ── */
-            .toast {
-                background: var(--ink2) !important;
-                border: 1px solid var(--line) !important;
-                color: var(--paper) !important;
-            }
-            .toast-header {
-                background: var(--ink3) !important;
-                border-bottom: 1px solid var(--line) !important;
-                color: var(--paper) !important;
-            }
-            .toast-header .btn-close {
-                filter: invert(1) brightness(.5);
-            }
-
-            /* ── STATS ── */
+            /* ════════════════════════════════════
+               STATS
+            ════════════════════════════════════ */
             .wgk-stat {
-                background: var(--ink2);
+                background: var(--bg2);
                 border: 1px solid var(--line);
-                border-radius: 4px;
-                padding: 20px 24px;
+                border-radius: 8px;
+                padding: 18px 22px;
                 transition: border-color .2s;
             }
             .wgk-stat:hover {
-                border-color: var(--fire);
+                border-color: var(--red);
             }
             .wgk-stat-num {
-                font-family: var(--disp);
-                font-size: 2.8rem;
-                letter-spacing: 2px;
-                color: var(--fire);
+                font-size: 2.4rem;
+                font-weight: 800;
+                color: var(--red);
                 line-height: 1;
             }
             .wgk-stat-label {
                 color: var(--smoke);
-                font-size: 0.6rem;
+                font-size: 0.65rem;
                 font-weight: 700;
-                letter-spacing: 2px;
+                letter-spacing: 1.5px;
                 text-transform: uppercase;
                 margin-top: 4px;
             }
 
-            /* ── YOUTUBE ── */
+            /* ════════════════════════════════════
+               YOUTUBE SECTION
+            ════════════════════════════════════ */
             .wgk-yt {
-                background: var(--ink2);
+                background: var(--bg2);
                 border-top: 1px solid var(--line);
-                padding: 72px 0;
+                padding: 64px 0;
             }
             .wgk-yt-frame {
                 position: relative;
                 width: 100%;
                 padding-top: 56.25%;
-                border-radius: 4px;
+                border-radius: 8px;
                 overflow: hidden;
                 border: 1px solid var(--line);
                 transition: border-color .3s;
             }
             .wgk-yt-frame:hover {
-                border-color: var(--fire);
+                border-color: var(--red);
             }
             .wgk-yt-frame iframe {
                 position: absolute;
@@ -961,58 +1178,60 @@
                 border: none;
             }
 
-            /* ── FOOTER ── */
+            /* ════════════════════════════════════
+               FOOTER
+            ════════════════════════════════════ */
             .wgk-footer {
-                background: var(--ink);
+                background: #0a0a0a;
                 border-top: 1px solid var(--line);
-                padding: 60px 0 28px;
+                padding: 52px 0 24px;
             }
             .wgk-footer-logo {
                 font-family: var(--disp);
-                font-size: 2.2rem;
-                letter-spacing: 6px;
-                color: var(--paper);
+                font-size: 2rem;
+                letter-spacing: 5px;
+                color: var(--white);
                 display: block;
-                margin-bottom: 12px;
+                margin-bottom: 10px;
             }
             .wgk-footer-logo em {
-                color: var(--fire);
+                color: var(--red);
                 font-style: normal;
             }
             .wgk-footer-text {
                 color: var(--smoke);
                 font-size: 0.82rem;
                 line-height: 1.7;
-                max-width: 230px;
+                max-width: 220px;
             }
             .wgk-footer-socials {
                 display: flex;
                 gap: 8px;
-                margin-top: 20px;
+                margin-top: 18px;
             }
             .wgk-footer-socials a {
-                width: 34px;
-                height: 34px;
+                width: 32px;
+                height: 32px;
                 border: 1px solid var(--line);
-                border-radius: 3px;
+                border-radius: 6px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: var(--smoke);
-                font-size: 0.85rem;
-                transition: border-color .2s, color .2s;
+                font-size: 0.8rem;
+                transition: all .2s;
             }
             .wgk-footer-socials a:hover {
-                border-color: var(--fire);
-                color: var(--fire);
+                border-color: var(--red);
+                color: var(--red);
             }
             .wgk-footer-heading {
-                font-family: var(--disp);
-                font-size: 0.95rem;
-                letter-spacing: 3px;
+                font-weight: 700;
+                font-size: 0.8rem;
+                letter-spacing: 1.5px;
                 text-transform: uppercase;
-                color: var(--paper);
-                margin-bottom: 16px;
+                color: var(--white);
+                margin-bottom: 14px;
             }
             .wgk-footer-link {
                 display: flex;
@@ -1020,21 +1239,21 @@
                 gap: 8px;
                 color: var(--smoke);
                 font-size: 0.82rem;
-                margin-bottom: 9px;
+                margin-bottom: 8px;
                 transition: color .2s;
             }
             .wgk-footer-link:hover {
-                color: var(--paper);
+                color: var(--white);
             }
             .wgk-footer-link i {
-                color: var(--fire);
-                font-size: 0.7rem;
+                color: var(--red);
+                font-size: 0.68rem;
                 width: 12px;
             }
             .wgk-footer-bottom {
                 border-top: 1px solid var(--line);
-                margin-top: 48px;
-                padding-top: 20px;
+                margin-top: 44px;
+                padding-top: 18px;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -1042,99 +1261,130 @@
                 gap: 8px;
             }
             .wgk-footer-bottom p {
-                color: #3a3a3a;
-                font-size: 0.7rem;
-                letter-spacing: 1px;
+                color: #333;
+                font-size: 0.72rem;
                 margin: 0;
             }
         </style>
     </head>
 
-    <!-- ═══════════ HEADER ═══════════ -->
+    <!-- ════════════════════════════════════
+         HEADER FRAGMENT
+    ════════════════════════════════════ -->
     <header th:fragment="header">
-        <nav class="wgk-nav navbar navbar-expand-lg px-0">
-            <div class="container">
+
+        <!-- Top announcement bar -->
+        <div class="wgk-topbar">
+            <i class="fas fa-certificate me-2"></i>
+            Sneakers 100% Certificados · Envío gratis a toda Puerto Rico
+            <i class="fas fa-certificate ms-2"></i>
+        </div>
+
+        <!-- Main navbar -->
+        <nav class="wgk-nav">
+            <div class="wgk-nav-inner">
                 <a th:href="@{/}" class="wgk-logo">WGK<em>.</em></a>
 
-                <button class="wgk-mob-toggle" id="wgkToggle" onclick="document.getElementById('wgkNavRow').classList.toggle('open')">
-                    <i class="fas fa-bars"></i>
-                </button>
+                <!-- Admin links next to logo -->
+                <ul class="wgk-navlinks">
+                    <li sec:authorize="hasAnyRole('ROLE_VENDEDOR','ROLE_ADMIN')">
+                        <a th:href="@{/sneaker/listado}">Sneakers</a>
+                    </li>
+                    <li sec:authorize="hasAnyRole('ROLE_VENDEDOR','ROLE_ADMIN')">
+                        <a th:href="@{/marca/listado}">Marcas</a>
+                    </li>
+                </ul>
 
-                <div class="wgk-nav-row" id="wgkNavRow">
-                    <ul class="wgk-navlinks">
-                        <li>
-                            <a th:href="@{/}"><i class="fas fa-home"></i>Inicio</a>
-                        </li>
-                        <li sec:authorize="hasAnyRole('ROLE_VENDEDOR','ROLE_ADMIN')">
-                            <a th:href="@{/sneaker/listado}"><i class="fas fa-shoe-prints"></i>Sneakers</a>
-                        </li>
-                        <li sec:authorize="hasAnyRole('ROLE_VENDEDOR','ROLE_ADMIN')">
-                            <a th:href="@{/marca/listado}"><i class="fas fa-tag"></i>Marcas</a>
-                        </li>
-                        <li class="wgk-dd" sec:authorize="hasRole('ROLE_ADMIN')">
-                            <a href="#"><i class="fas fa-cog"></i>Admin <i class="fas fa-chevron-down ms-1" style="font-size:.5rem;opacity:.5;"></i></a>
-                            <div class="wgk-dd-menu">
-                                <a th:href="@{/usuario/listado}"><i class="fas fa-users"></i>Usuarios</a>
-                            </div>
-                        </li>
-                    </ul>
-                    <div class="wgk-nav-right">
-                        <a th:href="@{/carrito/ver}" class="wgk-nav-cart">
-                            <i class="fas fa-shopping-bag"></i>Carrito
-                        </a>
-                        <a th:href="@{/login}" class="wgk-btn-login" sec:authorize="!isAuthenticated()">
-                            <i class="fas fa-user"></i>Login
-                        </a>
-                        <div class="d-flex align-items-center gap-3" sec:authorize="isAuthenticated()">
-                            <span class="wgk-user-name">
-                                <i class="fas fa-user-circle me-1"></i><span sec:authentication="name"></span>
-                            </span>
-                            <form method="post" th:action="@{/logout}" class="m-0 p-0">
-                                <button class="wgk-btn-logout" type="submit">
-                                    <i class="fas fa-sign-out-alt me-1"></i>Salir
-                                </button>
-                            </form>
-                        </div>
+                <!-- Right: search + cart + auth -->
+                <div class="wgk-nav-right">
+                    <!-- Search bar (submits to /buscar) -->
+                    <form th:action="@{/buscar}" method="get" class="wgk-search-wrap m-0 p-0">
+                        <i class="fas fa-search wgk-search-icon"></i>
+                        <input class="wgk-search"
+                               type="text"
+                               name="q"
+                               placeholder="Buscar sneaker..."
+                               autocomplete="off"/>
+                    </form>
+
+                    <a th:href="@{/carrito/ver}" class="wgk-nav-cart">
+                        <i class="fas fa-shopping-bag"></i>Carrito
+                    </a>
+                    <a th:href="@{/login}" class="wgk-btn-nav-login"
+                       sec:authorize="!isAuthenticated()">
+                        Login
+                    </a>
+                    <div class="d-flex align-items-center gap-2"
+                         sec:authorize="isAuthenticated()">
+                        <span class="wgk-user-name">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span sec:authentication="name"></span>
+                        </span>
+                        <form method="post" th:action="@{/logout}" class="m-0 p-0">
+                            <button class="wgk-btn-nav-logout" type="submit">Salir</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </nav>
 
-        <div class="wgk-hero">
-            <div class="container">
-                <div style="text-align:center; position:relative; z-index:1;">
-                    <div class="wgk-hero-badge" style="display:inline-flex; margin-bottom:22px;">
-                        <i class="fas fa-certificate"></i>Sneakers Certificados · Puerto Rico
-                    </div>
-                    <h1 style="text-align:center;">Wego<em>T</em><br/>Kicks PR</h1>
-                    <div class="wgk-hero-sub" style="justify-content:center;">
-                        <span>Limited Editions</span>
-                        <span class="wgk-dot"></span>
-                        <span>Iconic Drops</span>
-                        <span class="wgk-dot"></span>
-                        <span>Exclusive Streetwear</span>
-                    </div>
+        <!-- Sub-nav (brand categories) -->
+        <div class="wgk-subnav">
+            <div class="wgk-subnav-inner">
+                <a th:href="@{/}" class="wgk-subnav-link">Todos</a>
+                <span class="wgk-subnav-div"></span>
+                <a th:href="@{/marca/1}" class="wgk-subnav-link">Nike</a>
+                <a th:href="@{/marca/2}" class="wgk-subnav-link">Adidas</a>
+                <a th:href="@{/marca/3}" class="wgk-subnav-link">Jordan</a>
+                <a th:href="@{/marca/4}" class="wgk-subnav-link">New Balance</a>
+                <a th:href="@{/marca/5}" class="wgk-subnav-link">Vans</a>
+                <span class="wgk-subnav-div"></span>
+                <a th:href="@{/carrito/ver}" class="wgk-subnav-link drops">
+                    🔥 Drops
+                </a>
+                <div class="wgk-subnav-admin"
+                     sec:authorize="hasAnyRole('ROLE_VENDEDOR','ROLE_ADMIN')">
+                    <a th:href="@{/sneaker/listado}">
+                        <i class="fas fa-cog"></i>Admin
+                    </a>
+                    <a th:href="@{/marca/listado}"
+                       sec:authorize="hasRole('ROLE_ADMIN')">
+                        <i class="fas fa-tag"></i>Marcas
+                    </a>
                 </div>
             </div>
         </div>
+
     </header>
 
-    <!-- ═══════════ FOOTER ═══════════ -->
+    <!-- ════════════════════════════════════
+         FOOTER FRAGMENT
+    ════════════════════════════════════ -->
     <footer th:fragment="footer">
+
+        <!-- YouTube section -->
         <div class="wgk-yt">
             <div class="container">
                 <div class="row align-items-center g-5">
                     <div class="col-lg-4">
-                        <div class="wgk-hero-badge mb-3 d-inline-flex">
-                            <i class="fab fa-youtube me-2"></i>Canal Oficial
-                        </div>
-                        <h2 style="font-family:var(--disp);font-size:3rem;letter-spacing:4px;text-transform:uppercase;line-height:1;margin-bottom:16px;color:var(--paper);">
-                            Wego<em style="color:var(--fire);font-style:normal;">T</em><br/>Kicks
+                        <span style="display:inline-flex;align-items:center;gap:6px;
+                              background:var(--red);color:#fff;font-size:0.6rem;
+                              font-weight:700;letter-spacing:2px;text-transform:uppercase;
+                              padding:5px 12px;margin-bottom:18px;border-radius:3px;">
+                            <i class="fab fa-youtube"></i>Canal Oficial
+                        </span>
+                        <h2 style="font-family:var(--disp);font-size:2.8rem;letter-spacing:3px;
+                            text-transform:uppercase;line-height:1;margin-bottom:14px;
+                            color:var(--white);">
+                            Wego<em style="color:var(--red);font-style:normal;">T</em><br/>Kicks
                         </h2>
-                        <p class="wgk-footer-text mb-4">
-                            Reviews, unboxings y los últimos drops en nuestro canal. Autenticidad en cada video.
+                        <p style="color:var(--smoke);font-size:0.85rem;line-height:1.7;
+                           margin-bottom:22px;max-width:240px;">
+                            Reviews, unboxings y los últimos drops.
+                            Autenticidad garantizada en cada video.
                         </p>
-                        <a href="https://www.youtube.com/@WeGotKicks" target="_blank" class="wgk-btn-fire">
+                        <a href="https://www.youtube.com/@WeGotKicks"
+                           target="_blank" class="wgk-btn-red">
                             <i class="fab fa-youtube"></i>Ver Canal Completo
                         </a>
                     </div>
@@ -1143,7 +1393,8 @@
                             <iframe
                                 src="https://www.youtube.com/embed/wo1xEagWOtg?start=4"
                                 title="WeGoTKicks PR"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allow="accelerometer; autoplay; clipboard-write;
+                                encrypted-media; gyroscope; picture-in-picture"
                                 allowfullscreen>
                             </iframe>
                         </div>
@@ -1152,76 +1403,101 @@
             </div>
         </div>
 
+        <!-- Footer grid -->
         <div class="wgk-footer">
             <div class="container">
                 <div class="row g-5">
                     <div class="col-lg-4">
                         <span class="wgk-footer-logo">WGK<em>.</em></span>
                         <p class="wgk-footer-text">
-                            Tienda certificada de sneakers legit. Autenticidad garantizada en cada par. Puerto Rico's #1 sneaker destination.
+                            Tienda certificada de sneakers legit.
+                            Autenticidad garantizada en cada par.
+                            Puerto Rico's #1 sneaker destination.
                         </p>
                         <div class="wgk-footer-socials">
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                            <a href="#"><i class="fab fa-tiktok"></i></a>
-                            <a href="https://www.youtube.com/@WeGotKicks" target="_blank"><i class="fab fa-youtube"></i></a>
-                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="#" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                            <a href="https://www.youtube.com/@WeGotKicks"
+                               target="_blank" title="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                            <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
                         </div>
                     </div>
                     <div class="col-6 col-lg-2">
                         <p class="wgk-footer-heading">Marcas</p>
-                        <a class="wgk-footer-link" href="#">Nike</a>
-                        <a class="wgk-footer-link" href="#">Jordan</a>
-                        <a class="wgk-footer-link" href="#">Adidas</a>
-                        <a class="wgk-footer-link" href="#">New Balance</a>
-                        <a class="wgk-footer-link" href="#">Vans</a>
+                        <a class="wgk-footer-link" th:href="@{/marca/1}">Nike</a>
+                        <a class="wgk-footer-link" th:href="@{/marca/3}">Jordan</a>
+                        <a class="wgk-footer-link" th:href="@{/marca/2}">Adidas</a>
+                        <a class="wgk-footer-link" th:href="@{/marca/4}">New Balance</a>
+                        <a class="wgk-footer-link" th:href="@{/marca/5}">Vans</a>
                     </div>
                     <div class="col-6 col-lg-3">
                         <p class="wgk-footer-heading">Contacto</p>
-                        <span class="wgk-footer-link"><i class="fas fa-map-marker-alt"></i>Puerto Rico</span>
-                        <span class="wgk-footer-link"><i class="fas fa-phone"></i>3244-2144</span>
-                        <span class="wgk-footer-link"><i class="fas fa-clock"></i>Lun–Sáb · 2:00 – 10:00 pm</span>
-                        <a href="https://www.youtube.com/@WeGotKicks" target="_blank" class="wgk-footer-link">
-                            <i class="fab fa-youtube"></i>youtube.com/@WeGotKicks
+                        <span class="wgk-footer-link">
+                            <i class="fas fa-map-marker-alt"></i>Puerto Rico
+                        </span>
+                        <span class="wgk-footer-link">
+                            <i class="fas fa-phone"></i>3244-2144
+                        </span>
+                        <span class="wgk-footer-link">
+                            <i class="fas fa-clock"></i>Lun–Sáb · 2:00 – 10:00pm
+                        </span>
+                        <a href="https://www.youtube.com/@WeGotKicks"
+                           target="_blank" class="wgk-footer-link">
+                            <i class="fab fa-youtube"></i>@WeGotKicks
                         </a>
                     </div>
                     <div class="col-lg-3">
-                        <p class="wgk-footer-heading">Certificación</p>
-                        <p class="wgk-footer-text">
-                            Todos nuestros pares pasan por verificación de autenticidad antes de llegar a tus manos.
+                        <p class="wgk-footer-heading">Legit Check</p>
+                        <p style="color:var(--smoke);font-size:0.82rem;line-height:1.7;">
+                            Todos nuestros pares pasan por verificación
+                            de autenticidad antes de llegar a tus manos.
                         </p>
-                        <div style="margin-top:16px;display:inline-flex;align-items:center;gap:8px;background:rgba(255,31,31,.08);border:1px solid rgba(255,31,31,.2);padding:10px 14px;border-radius:3px;">
-                            <i class="fas fa-certificate" style="color:var(--fire);"></i>
-                            <span style="color:var(--paper);font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">100% Legit</span>
+                        <div style="margin-top:14px;display:inline-flex;align-items:center;
+                             gap:8px;background:rgba(255,0,0,.08);
+                             border:1px solid rgba(255,0,0,.2);
+                             padding:10px 14px;border-radius:6px;">
+                            <i class="fas fa-certificate" style="color:var(--red);"></i>
+                            <span style="color:var(--white);font-size:0.7rem;font-weight:700;
+                                  letter-spacing:1px;text-transform:uppercase;">
+                                100% Legit
+                            </span>
                         </div>
                     </div>
                 </div>
                 <div class="wgk-footer-bottom">
                     <p>&copy; 2026 WegoTKicks PR — Todos los derechos reservados</p>
-                    <p>Hecho con <i class="fas fa-heart" style="color:var(--fire);font-size:.6rem;"></i> en Puerto Rico</p>
+                    <p>Hecho con <i class="fas fa-heart"
+                                    style="color:var(--red);font-size:.6rem;"></i> en Puerto Rico</p>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- ═══════════ TOAST ═══════════ -->
+    <!-- ════════════════════════════════════
+         TOAST FRAGMENT
+    ════════════════════════════════════ -->
     <section th:fragment="mostrarToast">
         <div class="position-fixed top-0 end-0 p-3" style="z-index:1200;">
             <div th:if="${error}" class="toast show align-items-center" role="alert">
                 <div class="d-flex">
                     <div class="toast-body d-flex align-items-center gap-2">
-                        <i class="fas fa-exclamation-circle" style="color:var(--fire);"></i>
+                        <i class="fas fa-exclamation-circle" style="color:var(--red);"></i>
                         <span th:text="${error}"></span>
                     </div>
-                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                    <button type="button" class="btn-close me-2 m-auto"
+                            data-bs-dismiss="toast"></button>
                 </div>
             </div>
             <div th:if="${todoOk}" class="toast show align-items-center" role="alert">
                 <div class="d-flex">
                     <div class="toast-body d-flex align-items-center gap-2">
-                        <i class="fas fa-check-circle" style="color:#4ade80;"></i>
+                        <i class="fas fa-check-circle" style="color:#22c55e;"></i>
                         <span th:text="${todoOk}"></span>
                     </div>
-                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                    <button type="button" class="btn-close me-2 m-auto"
+                            data-bs-dismiss="toast"></button>
                 </div>
             </div>
         </div>

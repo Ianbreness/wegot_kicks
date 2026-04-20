@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+    <head th:replace="~{general/fragmentos :: head}"/>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"/>
+        <section th:replace="~{general/fragmentos :: mostrarToast}"/>
+
+        <div class="container py-5">
+
+            <!-- Breadcrumb -->
+            <nav style="margin-bottom:28px;">
+                <span style="font-size:0.75rem;color:var(--smoke);">
+                    <a th:href="@{/}" style="color:var(--smoke);transition:color .2s;"
+                       onmouseover="this.style.color = 'var(--white)'"
+                       onmouseout="this.style.color = 'var(--smoke)'">Inicio</a>
+                    <span style="margin:0 8px;opacity:.4;">/</span>
+                    <a th:href="@{/}" style="color:var(--smoke);transition:color .2s;"
+                       onmouseover="this.style.color = 'var(--white)'"
+                       onmouseout="this.style.color = 'var(--smoke)'"
+                       th:text="${sneaker.marca != null ? sneaker.marca.descripcion : 'Sneakers'}">
+                        Marca
+                    </a>
+                    <span style="margin:0 8px;opacity:.4;">/</span>
+                    <span style="color:var(--white);font-weight:600;"
+                          th:text="${sneaker.descripcion}">Nombre</span>
+                </span>
+            </nav>
+
+            <div class="row g-5">
+
+                <!-- ════ COLUMNA IZQUIERDA: Imagen ════ -->
+                <div class="col-lg-6">
+                    <!-- Imagen principal -->
+                    <div id="mainImgWrap"
+                         style="background:#f4f4f4;border-radius:14px;
+                         display:flex;align-items:center;justify-content:center;
+                         padding:32px;height:420px;overflow:hidden;
+                         border:1px solid #e8e8e8;position:relative;">
+                        <img id="mainImg"
+                             th:src="${sneaker.rutaImagen != null ? sneaker.rutaImagen :
+                             'https://placehold.co/400x400/f4f4f4/aaaaaa?text=WGK'}"
+                             th:alt="${sneaker.descripcion}"
+                             style="max-height:340px;max-width:100%;
+                             object-fit:contain;
+                             transition:transform .4s;"/>
+
+                        <!-- Heart -->
+                        <button id="favBtn"
+                                style="position:absolute;top:14px;right:14px;
+                                background:rgba(255,255,255,.9);border:none;
+                                width:36px;height:36px;border-radius:50%;
+                                display:flex;align-items:center;justify-content:center;
+                                cursor:pointer;color:#ccc;font-size:1rem;
+                                box-shadow:0 2px 8px rgba(0,0,0,.12);
+                                transition:color .2s;"
+                                onclick="toggleFav(this)"
+                                title="Agregar a favoritos">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+
+                    <!-- Thumbnails — misma imagen en distintos ángulos (simulado) -->
+                    <div style="display:flex;gap:10px;margin-top:14px;overflow-x:auto;
+                         padding-bottom:4px;scrollbar-width:none;">
+                        <div th:each="i : ${#numbers.sequence(1,4)}"
+                             style="flex-shrink:0;width:80px;height:80px;
+                             background:#f4f4f4;border-radius:8px;
+                             border:2px solid #e8e8e8;
+                             display:flex;align-items:center;justify-content:center;
+                             cursor:pointer;overflow:hidden;transition:border-color .2s;"
+                             onmouseover="this.style.borderColor = 'var(--red)'"
+                             onmouseout="if (!this.classList.contains('active-thumb'))
+                                         this.style.borderColor = '#e8e8e8'"
+                             onclick="selectThumb(this, this.querySelector('img').src)">
+                            <img th:src="${sneaker.rutaImagen != null ? sneaker.rutaImagen :
+                                 'https://placehold.co/80x80/f4f4f4/aaaaaa?text=WGK'}"
+                                 style="width:100%;height:100%;object-fit:contain;padding:6px;"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ════ COLUMNA DERECHA: Detalles ════ -->
+                <div class="col-lg-6">
+
+                    <!-- Marca + nombre -->
+                    <div style="margin-bottom:6px;">
+                        <span style="font-size:0.75rem;font-weight:700;color:var(--smoke);
+                              text-transform:uppercase;letter-spacing:1px;"
+                              th:text="${sneaker.marca != null ? sneaker.marca.descripcion : 'WGK'}">
+                            Marca
+                        </span>
+                    </div>
+                    <h1 style="font-family:var(--disp);font-size:2.4rem;letter-spacing:3px;
+                        text-transform:uppercase;color:var(--white);line-height:1.05;
+                        margin-bottom:8px;"
+                        th:text="${sneaker.descripcion}">Nombre</h1>
+
+                    <!-- Descripción -->
+                    <p style="color:var(--smoke);font-size:0.9rem;line-height:1.6;
+                       margin-bottom:24px;"
+                       th:text="${sneaker.detalle != null ? sneaker.detalle : ''}">
+                    </p>
+
+                    <!-- Precio -->
+                    <div style="background:var(--bg2);border:1px solid var(--line);
+                         border-radius:10px;padding:18px 20px;margin-bottom:24px;">
+                        <div style="font-size:0.65rem;font-weight:700;color:var(--smoke);
+                             letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">
+                            Precio más bajo
+                        </div>
+                        <div style="font-family:var(--disp);font-size:2.6rem;letter-spacing:2px;
+                             color:var(--white);line-height:1;"
+                             th:text="'$' + ${#numbers.formatDecimal(sneaker.precio, 1, 'COMMA', 2, 'POINT')}">
+                            $0
+                        </div>
+                        <div style="margin-top:10px;display:flex;align-items:center;gap:8px;">
+                            <span th:if="${sneaker.existencias != null and sneaker.existencias > 0}"
+                                  style="display:inline-flex;align-items:center;gap:6px;
+                                  background:rgba(34,197,94,.1);color:#22c55e;
+                                  border:1px solid rgba(34,197,94,.25);font-size:0.72rem;
+                                  font-weight:700;padding:4px 10px;border-radius:20px;">
+                                <i class="fas fa-check-circle" style="font-size:.65rem;"></i>
+                                <span th:text="${sneaker.existencias} + ' pares disponibles'"></span>
+                            </span>
+                            <span th:if="${sneaker.existencias == null or sneaker.existencias == 0}"
+                                  style="display:inline-flex;align-items:center;gap:6px;
+                                  background:rgba(255,0,0,.1);color:var(--red);
+                                  border:1px solid rgba(255,0,0,.2);font-size:0.72rem;
+                                  font-weight:700;padding:4px 10px;border-radius:20px;">
+                                <i class="fas fa-times-circle" style="font-size:.65rem;"></i>
+                                Agotado
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Selector de tallas -->
+                    <div style="margin-bottom:24px;">
+                        <div style="display:flex;justify-content:space-between;
+                             align-items:center;margin-bottom:12px;">
+                            <span style="font-size:0.8rem;font-weight:700;color:var(--white);
+                                  text-transform:uppercase;letter-spacing:1px;">
+                                Talla
+                            </span>
+                            <span id="tallaSeleccionada"
+                                  style="font-size:0.75rem;font-weight:600;color:var(--smoke);">
+                                Selecciona una talla
+                            </span>
+                        </div>
+
+                        <!-- Grid de tallas generado desde el campo tallas -->
+                        <div id="tallasGrid"
+                             style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                            <div th:each="talla : ${tallasLista}"
+                                 class="talla-btn"
+                                 th:text="${talla}"
+                                 th:attr="data-talla=${talla}"
+                                 onclick="selectTalla(this)"
+                                 style="background:var(--bg2);border:1px solid var(--line);
+                                 border-radius:8px;padding:12px 8px;text-align:center;
+                                 font-size:0.85rem;font-weight:600;color:var(--white);
+                                 cursor:pointer;transition:all .2s;">
+                            </div>
+                        </div>
+
+                        <!-- Sin tallas definidas -->
+                        <p th:if="${tallasLista == null or tallasLista.isEmpty()}"
+                           style="color:var(--smoke);font-size:0.82rem;">
+                            Tallas no especificadas — consulta disponibilidad.
+                        </p>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div style="display:flex;flex-direction:column;gap:10px;"
+                         th:if="${sneaker.existencias != null and sneaker.existencias > 0}">
+
+                        <!-- Agregar al carrito -->
+                        <form method="post"
+                              th:action="@{/carrito/agregar/{id}(id=${sneaker.idSneaker})}">
+                            <button type="submit"
+                                    style="width:100%;background:var(--red);color:#fff;
+                                    border:none;padding:15px 24px;font-size:0.88rem;
+                                    font-weight:700;border-radius:8px;cursor:pointer;
+                                    letter-spacing:0.5px;transition:background .2s;
+                                    display:flex;align-items:center;
+                                    justify-content:center;gap:10px;"
+                                    onmouseover="this.style.background = '#cc0000'"
+                                    onmouseout="this.style.background = 'var(--red)'">
+                                <i class="fas fa-shopping-bag"></i>
+                                Agregar al Carrito
+                            </button>
+                        </form>
+
+                        <!-- Ir al carrito -->
+                        <a th:href="@{/carrito/ver}"
+                           style="width:100%;background:transparent;color:var(--white);
+                           border:1px solid var(--line);padding:14px 24px;
+                           font-size:0.88rem;font-weight:700;border-radius:8px;
+                           cursor:pointer;letter-spacing:0.5px;transition:all .2s;
+                           display:flex;align-items:center;justify-content:center;
+                           gap:10px;text-decoration:none;"
+                           onmouseover="this.style.borderColor = 'var(--smoke)'"
+                           onmouseout="this.style.borderColor = 'var(--line)'">
+                            <i class="fas fa-eye"></i>
+                            Ver Carrito
+                        </a>
+                    </div>
+
+                    <!-- Agotado -->
+                    <div th:if="${sneaker.existencias == null or sneaker.existencias == 0}"
+                         style="background:rgba(255,255,255,.04);border:1px solid var(--line);
+                         border-radius:8px;padding:20px;text-align:center;">
+                        <i class="fas fa-bell" style="color:var(--smoke);font-size:1.5rem;
+                           display:block;margin-bottom:10px;"></i>
+                        <p style="color:var(--smoke);font-size:0.85rem;margin:0;">
+                            Este modelo está agotado en este momento.
+                        </p>
+                    </div>
+
+                    <!-- Info extra -->
+                    <div style="margin-top:28px;border-top:1px solid var(--line);padding-top:20px;">
+
+                        <!-- Acordeón: Verificación -->
+                        <div style="border:1px solid var(--line);border-radius:8px;
+                             margin-bottom:8px;overflow:hidden;">
+                            <button onclick="toggleAcordeon('ac1')"
+                                    style="width:100%;background:var(--bg2);border:none;
+                                    padding:14px 18px;display:flex;align-items:center;
+                                    justify-content:space-between;cursor:pointer;
+                                    color:var(--white);font-size:0.82rem;font-weight:600;">
+                                <span style="display:flex;align-items:center;gap:10px;">
+                                    <i class="fas fa-certificate" style="color:var(--red);"></i>
+                                    Verificación Legit
+                                </span>
+                                <i class="fas fa-chevron-down" id="ic-ac1"
+                                   style="font-size:0.7rem;color:var(--smoke);
+                                   transition:transform .2s;"></i>
+                            </button>
+                            <div id="ac1" style="display:none;background:var(--bg3);
+                                 padding:14px 18px;">
+                                <p style="color:var(--smoke);font-size:0.8rem;
+                                   line-height:1.6;margin:0;">
+                                    Todos nuestros sneakers pasan por un proceso de verificación
+                                    de autenticidad antes de llegar a tus manos. Garantizamos
+                                    que cada par es 100% legit.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Acordeón: Envío -->
+                        <div style="border:1px solid var(--line);border-radius:8px;
+                             margin-bottom:8px;overflow:hidden;">
+                            <button onclick="toggleAcordeon('ac2')"
+                                    style="width:100%;background:var(--bg2);border:none;
+                                    padding:14px 18px;display:flex;align-items:center;
+                                    justify-content:space-between;cursor:pointer;
+                                    color:var(--white);font-size:0.82rem;font-weight:600;">
+                                <span style="display:flex;align-items:center;gap:10px;">
+                                    <i class="fas fa-shipping-fast" style="color:var(--red);"></i>
+                                    Envío y Entrega
+                                </span>
+                                <i class="fas fa-chevron-down" id="ic-ac2"
+                                   style="font-size:0.7rem;color:var(--smoke);
+                                   transition:transform .2s;"></i>
+                            </button>
+                            <div id="ac2" style="display:none;background:var(--bg3);
+                                 padding:14px 18px;">
+                                <p style="color:var(--smoke);font-size:0.8rem;
+                                   line-height:1.6;margin:0;">
+                                    Envío gratis a toda Puerto Rico. El tiempo estimado de entrega
+                                    es de 3 a 5 días hábiles una vez confirmado el pago.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Acordeón: Devoluciones -->
+                        <div style="border:1px solid var(--line);border-radius:8px;
+                             overflow:hidden;">
+                            <button onclick="toggleAcordeon('ac3')"
+                                    style="width:100%;background:var(--bg2);border:none;
+                                    padding:14px 18px;display:flex;align-items:center;
+                                    justify-content:space-between;cursor:pointer;
+                                    color:var(--white);font-size:0.82rem;font-weight:600;">
+                                <span style="display:flex;align-items:center;gap:10px;">
+                                    <i class="fas fa-undo" style="color:var(--red);"></i>
+                                    Devoluciones
+                                </span>
+                                <i class="fas fa-chevron-down" id="ic-ac3"
+                                   style="font-size:0.7rem;color:var(--smoke);
+                                   transition:transform .2s;"></i>
+                            </button>
+                            <div id="ac3" style="display:none;background:var(--bg3);
+                                 padding:14px 18px;">
+                                <p style="color:var(--smoke);font-size:0.8rem;
+                                   line-height:1.6;margin:0;">
+                                    Aceptamos devoluciones dentro de los 7 días siguientes a la
+                                    recepción, siempre que el par esté en condiciones originales
+                                    y sin uso. Contáctanos al 3244-2144.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <footer th:replace="~{general/fragmentos :: footer}"/>
+
+        <script>
+            // ── Talla selector ──
+            function selectTalla(el) {
+                document.querySelectorAll('.talla-btn').forEach(btn => {
+                    btn.style.background = 'var(--bg2)';
+                    btn.style.borderColor = 'var(--line)';
+                    btn.style.color = 'var(--white)';
+                });
+                el.style.background = 'var(--white)';
+                el.style.borderColor = 'var(--white)';
+                el.style.color = 'var(--dark)';
+                document.getElementById('tallaSeleccionada').textContent =
+                        'Talla seleccionada: ' + el.getAttribute('data-talla');
+            }
+
+            // ── Thumbnail selector ──
+            function selectThumb(el, src) {
+                document.getElementById('mainImg').src = src;
+                document.querySelectorAll('[onclick*="selectThumb"]').forEach(t => {
+                    t.style.borderColor = '#e8e8e8';
+                });
+                el.style.borderColor = 'var(--red)';
+            }
+
+            // ── Hover zoom on main image ──
+            const mainImg = document.getElementById('mainImg');
+            if (mainImg) {
+                mainImg.addEventListener('mouseover', () => {
+                    mainImg.style.transform = 'scale(1.06)';
+                });
+                mainImg.addEventListener('mouseout', () => {
+                    mainImg.style.transform = 'scale(1)';
+                });
+            }
+
+            // ── Fav toggle ──
+            function toggleFav(btn) {
+                const icon = btn.querySelector('i');
+                icon.classList.toggle('far');
+                icon.classList.toggle('fas');
+                btn.style.color = icon.classList.contains('fas') ? 'var(--red)' : '#ccc';
+            }
+
+            // ── Acordeón ──
+            function toggleAcordeon(id) {
+                const panel = document.getElementById(id);
+                const icon = document.getElementById('ic-' + id);
+                const isOpen = panel.style.display === 'block';
+                panel.style.display = isOpen ? 'none' : 'block';
+                icon.style.transform = isOpen ? 'rotate(0)' : 'rotate(180deg)';
+            }
+        </script>
+    </body>
+</html>

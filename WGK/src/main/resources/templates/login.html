@@ -3,46 +3,83 @@
       xmlns:th="http://www.thymeleaf.org">
     <head th:replace="~{general/fragmentos :: head}"/>
     <body>
-        <!-- Navbar mínimo sin hero para login -->
-        <nav class="wgk-nav navbar px-0">
-            <div class="container">
-                <a th:href="@{/}" class="wgk-logo">WGK<em style="color:var(--fire);font-style:normal;">.</em></a>
+
+        <!-- Minimal navbar for login (no hero, no sub-nav) -->
+        <div style="background:var(--red);color:#fff;text-align:center;font-size:0.72rem;
+             font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:7px 12px;">
+            <i class="fas fa-certificate me-2"></i>
+            Sneakers 100% Certificados · Puerto Rico
+            <i class="fas fa-certificate ms-2"></i>
+        </div>
+        <nav style="background:var(--bg);border-bottom:1px solid var(--line);padding:0;">
+            <div style="display:flex;align-items:center;height:64px;padding:0 24px;max-width:1400px;margin:0 auto;">
+                <a th:href="@{/}"
+                   style="font-family:var(--disp);font-size:1.75rem;letter-spacing:4px;color:var(--white);">
+                    WGK<em style="color:var(--red);font-style:normal;">.</em>
+                </a>
             </div>
         </nav>
 
+        <!-- Login card -->
         <div class="wgk-login-page">
             <div class="wgk-login-card">
+
                 <span class="wgk-login-logo">WGK<em>.</em></span>
-                <p class="wgk-login-sub">Accede a tu cuenta</p>
+                <p class="wgk-login-sub">Accede a tu cuenta WGK</p>
 
                 <form method="POST" th:action="@{/login}">
-                    <div class="mb-4">
+
+                    <div class="mb-3">
                         <label class="wgk-label" for="username">Usuario</label>
-                        <input class="wgk-input" type="text" id="username"
-                               name="username" placeholder="Ingresa tu usuario"
+                        <input class="wgk-input"
+                               type="text"
+                               id="username"
+                               name="username"
+                               placeholder="Ingresa tu usuario"
                                autocomplete="username"/>
                     </div>
-                    <div class="mb-5">
+
+                    <div class="mb-4">
                         <label class="wgk-label" for="password">Contraseña</label>
-                        <input class="wgk-input" type="password" id="password"
-                               name="password" placeholder="••••••••"
+                        <input class="wgk-input"
+                               type="password"
+                               id="password"
+                               name="password"
+                               placeholder="••••••••"
                                autocomplete="current-password"/>
                     </div>
-                    <button class="wgk-btn w-100 justify-content-center" type="submit"
-                            style="padding:13px;font-size:.72rem;margin-bottom:10px;">
-                        <i class="fas fa-sign-in-alt"></i>Entrar
+
+                    <button class="wgk-btn-red w-100 justify-content-center"
+                            type="submit"
+                            style="padding:13px;font-size:.82rem;border-radius:6px;
+                            margin-bottom:10px;width:100%;">
+                        <i class="fas fa-sign-in-alt me-2"></i>Entrar
                     </button>
-                    <a th:href="@{/}" class="wgk-btn-ghost w-100 justify-content-center"
-                       style="padding:12px;font-size:.72rem;">
-                        <i class="fas fa-arrow-left"></i>Volver al catálogo
+
+                    <a th:href="@{/}"
+                       class="wgk-btn-outline w-100 justify-content-center"
+                       style="padding:12px;font-size:.78rem;width:100%;">
+                        <i class="fas fa-arrow-left me-2"></i>Volver al catálogo
                     </a>
+
                 </form>
 
+                <!-- Error message -->
                 <div th:if="${param.error != null}" class="wgk-alert-error">
                     <i class="fas fa-exclamation-circle me-2"></i>
                     Usuario o contraseña incorrectos
                 </div>
+
+                <!-- Hint for demo -->
+                <div style="margin-top:20px;padding:12px;background:rgba(255,255,255,.03);
+                     border:1px solid var(--line);border-radius:6px;font-size:0.72rem;
+                     color:var(--smoke);text-align:center;">
+                    <strong style="color:var(--white);">Usuarios de prueba:</strong><br/>
+                    admin / 123 &nbsp;·&nbsp; vendedor / 456 &nbsp;·&nbsp; cliente / 789
+                </div>
+
             </div>
         </div>
+
     </body>
 </html>

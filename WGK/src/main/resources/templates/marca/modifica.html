@@ -10,46 +10,104 @@
             <div class="row justify-content-center">
                 <div class="col-md-6">
                     <div class="wgk-panel">
+
                         <div class="wgk-panel-head">
                             <i class="fas fa-tag wgk-panel-icon"></i>
-                            <h5 th:text="${marca.idMarca != null ? 'Editar Marca' : 'Nueva Marca'}">Marca</h5>
+                            <h5 th:text="${marca.idMarca != null ? 'Editar Marca' : 'Nueva Marca'}">
+                                Marca
+                            </h5>
                         </div>
 
-                        <form method="post" th:action="@{/marca/guardar}" enctype="multipart/form-data">
+                        <form method="post" th:action="@{/marca/guardar}"
+                              enctype="multipart/form-data">
                             <div class="wgk-panel-body">
-                                <input type="hidden" name="idMarca" th:value="${marca.idMarca}"/>
+                                <input type="hidden" name="idMarca"
+                                       th:value="${marca.idMarca}"/>
+                                <input type="hidden" name="rutaImagen"
+                                       th:value="${marca.rutaImagen}"/>
 
                                 <div class="mb-4">
-                                    <label class="wgk-label">Nombre de la Marca</label>
+                                    <label class="wgk-label">Nombre de la Marca *</label>
                                     <input type="text" name="descripcion" class="wgk-input"
                                            th:value="${marca.descripcion}"
                                            placeholder="Ej: Nike" required/>
                                 </div>
 
+                                <!-- Imagen -->
                                 <div class="mb-4">
-                                    <label class="wgk-label">URL de imagen</label>
-                                    <input type="text" name="rutaImagen" class="wgk-input"
-                                           th:value="${marca.rutaImagen}"
-                                           placeholder="https://images.unsplash.com/..."/>
-                                    <p class="wgk-hint">Pega la URL directa del logo o imagen de la marca.</p>
-                                    <div th:if="${marca.rutaImagen != null}" style="margin-top:10px;">
+                                    <label class="wgk-label">Imagen de la Marca</label>
+
+                                    <!-- Imagen actual -->
+                                    <div th:if="${marca.rutaImagen != null}"
+                                         style="margin-bottom:14px;">
+                                        <p style="color:var(--smoke);font-size:0.72rem;
+                                           margin-bottom:8px;">Imagen actual:</p>
                                         <img th:src="${marca.rutaImagen}"
-                                             style="height:80px;border-radius:3px;border:1px solid var(--line);object-fit:cover;"/>
+                                             style="height:100px;border-radius:6px;
+                                             border:1px solid var(--line);
+                                             object-fit:contain;background:#ebebeb;
+                                             padding:6px;display:block;"/>
                                     </div>
+
+                                    <!-- File picker -->
+                                    <div style="border:2px dashed var(--line);border-radius:8px;
+                                         padding:20px;text-align:center;cursor:pointer;
+                                         transition:border-color .2s;"
+                                         id="marcaDropZone"
+                                         onclick="document.getElementById('marcaImagenFile').click()"
+                                         ondragover="event.preventDefault();this.style.borderColor='var(--red)'"
+                                         ondragleave="this.style.borderColor='var(--line)'"
+                                         ondrop="handleMarcaDrop(event)">
+                                        <i class="fas fa-cloud-upload-alt"
+                                           style="font-size:1.8rem;color:var(--smoke);
+                                           display:block;margin-bottom:6px;"></i>
+                                        <p style="color:var(--smoke);font-size:0.8rem;margin:0 0 4px;">
+                                            Haz clic o arrastra una imagen aquí
+                                        </p>
+                                        <p style="color:#555;font-size:0.68rem;margin:0;">
+                                            JPG, PNG, WEBP · Máx. 50MB
+                                        </p>
+                                    </div>
+
+                                    <input type="file" name="imagenFile" id="marcaImagenFile"
+                                           accept="image/*" style="display:none;"
+                                           onchange="previewMarcaFile(this)"/>
+
+                                    <!-- Preview nueva imagen -->
+                                    <div id="marcaPreviewWrap"
+                                         style="display:none;margin-top:12px;">
+                                        <p style="color:var(--smoke);font-size:0.72rem;
+                                           margin-bottom:8px;">Nueva imagen seleccionada:</p>
+                                        <img id="marcaPreviewImg"
+                                             style="height:100px;border-radius:6px;
+                                             border:2px solid var(--red);
+                                             object-fit:contain;background:#ebebeb;
+                                             padding:6px;display:block;"/>
+                                        <p id="marcaPreviewName"
+                                           style="color:var(--smoke);font-size:0.7rem;
+                                           margin-top:6px;"></p>
+                                    </div>
+
+                                    <p class="wgk-hint">
+                                        Si no seleccionas una nueva imagen, se conserva la actual.
+                                    </p>
                                 </div>
 
-                                <div class="d-flex align-items-center">
-                                    <input type="checkbox" name="activo" value="true" id="activoCheck"
-                                           th:checked="${marca.activo}"/>
-                                    <label class="wgk-check-label" for="activoCheck">Activo</label>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <input type="checkbox" name="activo" value="true"
+                                           id="activoMarca" th:checked="${marca.activo}"/>
+                                    <label class="wgk-check-label" for="activoMarca">
+                                        Activa (visible en catálogo)
+                                    </label>
                                 </div>
                             </div>
+
                             <div class="wgk-panel-foot">
-                                <a th:href="@{/marca/listado}" class="wgk-btn-ghost">
+                                <a th:href="@{/marca/listado}" class="wgk-btn-outline">
                                     <i class="fas fa-arrow-left"></i>Cancelar
                                 </a>
-                                <button type="submit" class="wgk-btn">
-                                    <i class="fas fa-save"></i>Guardar Marca
+                                <button type="submit" class="wgk-btn-red">
+                                    <i class="fas fa-save"></i>Guardar Cambios
                                 </button>
                             </div>
                         </form>
@@ -57,6 +115,35 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            function previewMarcaFile(input) {
+                const file = input.files[0];
+                if (!file)
+                    return;
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('marcaPreviewImg').src = e.target.result;
+                    document.getElementById('marcaPreviewName').textContent =
+                            file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)';
+                    document.getElementById('marcaPreviewWrap').style.display = 'block';
+                    document.getElementById('marcaDropZone').style.borderColor = 'var(--red)';
+                };
+                reader.readAsDataURL(file);
+            }
+            function handleMarcaDrop(event) {
+                event.preventDefault();
+                const file = event.dataTransfer.files[0];
+                if (!file || !file.type.startsWith('image/'))
+                    return;
+                document.getElementById('marcaDropZone').style.borderColor = 'var(--line)';
+                const input = document.getElementById('marcaImagenFile');
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                input.files = dt.files;
+                previewMarcaFile(input);
+            }
+        </script>
 
         <footer th:replace="~{general/fragmentos :: footer}"/>
     </body>
