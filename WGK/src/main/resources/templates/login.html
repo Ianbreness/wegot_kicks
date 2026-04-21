@@ -4,29 +4,34 @@
     <head th:replace="~{general/fragmentos :: head}"/>
     <body>
 
-        <!-- Minimal navbar for login (no hero, no sub-nav) -->
+        <!-- Top bar -->
         <div style="background:var(--red);color:#fff;text-align:center;font-size:0.72rem;
              font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:7px 12px;">
             <i class="fas fa-certificate me-2"></i>
             Sneakers 100% Certificados · Puerto Rico
             <i class="fas fa-certificate ms-2"></i>
         </div>
+
+        <!-- Minimal navbar -->
         <nav style="background:var(--bg);border-bottom:1px solid var(--line);padding:0;">
-            <div style="display:flex;align-items:center;height:64px;padding:0 24px;max-width:1400px;margin:0 auto;">
+            <div style="display:flex;align-items:center;height:64px;padding:0 24px;">
                 <a th:href="@{/}"
-                   style="font-family:var(--disp);font-size:1.75rem;letter-spacing:4px;color:var(--white);">
+                   style="font-family:var(--disp);font-size:1.75rem;
+                   letter-spacing:4px;color:var(--white);text-decoration:none;">
                     WGK<em style="color:var(--red);font-style:normal;">.</em>
                 </a>
             </div>
         </nav>
 
-        <!-- Login card -->
+        <!-- Login page -->
         <div class="wgk-login-page">
             <div class="wgk-login-card">
 
+                <!-- Logo -->
                 <span class="wgk-login-logo">WGK<em>.</em></span>
                 <p class="wgk-login-sub">Accede a tu cuenta WGK</p>
 
+                <!-- ── Formulario usuario/contraseña ── -->
                 <form method="POST" th:action="@{/login}">
 
                     <div class="mb-3">
@@ -52,7 +57,7 @@
                     <button class="wgk-btn-red w-100 justify-content-center"
                             type="submit"
                             style="padding:13px;font-size:.82rem;border-radius:6px;
-                            margin-bottom:10px;width:100%;">
+                            margin-bottom:10px;width:100%;cursor:pointer;">
                         <i class="fas fa-sign-in-alt me-2"></i>Entrar
                     </button>
 
@@ -64,16 +69,53 @@
 
                 </form>
 
-                <!-- Error message -->
-                <div th:if="${param.error != null}" class="wgk-alert-error">
+                <!-- ── Separador ── -->
+                <div style="display:flex;align-items:center;gap:12px;margin:20px 0;">
+                    <hr style="flex:1;border:none;border-top:1px solid var(--line);margin:0;"/>
+                    <span style="color:var(--smoke);font-size:0.72rem;white-space:nowrap;">
+                        o continúa con
+                    </span>
+                    <hr style="flex:1;border:none;border-top:1px solid var(--line);margin:0;"/>
+                </div>
+
+                <!-- ── Botón Google ── -->
+                <a href="/oauth2/authorization/google"
+                   style="display:flex;align-items:center;justify-content:center;gap:10px;
+                   width:100%;background:#fff;color:#333;
+                   border:1px solid #ddd;padding:12px;border-radius:6px;
+                   font-size:0.82rem;font-weight:600;text-decoration:none;
+                   transition:background .2s,box-shadow .2s;"
+                   onmouseover="this.style.background = '#f5f5f5';this.style.boxShadow = '0 2px 8px rgba(0,0,0,.15)'"
+                   onmouseout="this.style.background = '#fff';this.style.boxShadow = 'none'">
+                    <!-- Google G logo SVG -->
+                    <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#EA4335"
+                              d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0
+                              14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                        <path fill="#4285F4"
+                              d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26
+                              5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                        <path fill="#FBBC05"
+                              d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92
+                              16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                        <path fill="#34A853"
+                              d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16
+                              2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                        <path fill="none" d="M0 0h48v48H0z"/>
+                    </svg>
+                    Continuar con Google
+                </a>
+
+                <!-- ── Error de login ── -->
+                <div th:if="${param.error != null}" class="wgk-alert-error mt-3">
                     <i class="fas fa-exclamation-circle me-2"></i>
                     Usuario o contraseña incorrectos
                 </div>
 
-                <!-- Hint for demo -->
+                <!-- ── Hint usuarios de prueba ── -->
                 <div style="margin-top:20px;padding:12px;background:rgba(255,255,255,.03);
-                     border:1px solid var(--line);border-radius:6px;font-size:0.72rem;
-                     color:var(--smoke);text-align:center;">
+                     border:1px solid var(--line);border-radius:6px;
+                     font-size:0.72rem;color:var(--smoke);text-align:center;">
                     <strong style="color:var(--white);">Usuarios de prueba:</strong><br/>
                     admin / 123 &nbsp;·&nbsp; vendedor / 456 &nbsp;·&nbsp; cliente / 789
                 </div>

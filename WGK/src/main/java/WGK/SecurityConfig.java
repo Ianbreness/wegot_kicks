@@ -1,5 +1,6 @@
 package WGK;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,13 +15,18 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
+
     public static final String[] PUBLIC_URLS = {
         "/", "/index", "/fav/**", "/carrito/**", "/sneaker/**",
         "/js/**", "/webjars/**", "/img/**", "/login", "/acceso_denegado",
         "/registro/**", "/css/**",
-        "/buscar",          // Búsqueda pública
-        "/uploads/**",      // Imágenes subidas desde carpeta externa
-        "/marca/{idMarca}"  // Filtro por marca en catálogo público
+        "/buscar",
+        "/uploads/**",
+        "/marca/**",
+        "/oauth2/**",
+        "/login/oauth2/**"
     };
 
     public static final String[] USUARIO_URLS = {
@@ -32,7 +38,7 @@ public class SecurityConfig {
     };
 
     public static final String[] ADMIN_URLS = {
-        "/marca/**", "/usuario/**"
+        "/usuario/**"
     };
 
     @Bean
@@ -43,24 +49,33 @@ public class SecurityConfig {
                 .requestMatchers(ADMIN_OR_VENDEDOR_URLS).hasAnyRole("ADMIN", "VENDEDOR")
                 .requestMatchers(ADMIN_URLS).hasRole("ADMIN")
                 .anyRequest().authenticated()
+
         ).formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/", true)
                 .failureUrl("/login?error=true")
                 .permitAll()
+
+        ).oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .defaultSuccessUrl("/", true)
+                // Usa nuestro servicio que extrae el nombre real de Google
+                .userInfoEndpoint(userInfo -> userInfo
+                        .userService(customOAuth2UserService)
+                )
+
         ).logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout=true")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll()
+
         ).exceptionHandling(exceptions -> exceptions
                 .accessDeniedPage("/acceso_denegado")
-        ).sessionManagement(session -> session
-                .maximumSessions(1)
-                .maxSessionsPreventsLogin(false)
         );
+
         return http.build();
     }
 
