@@ -3,16 +3,10 @@ package WGK.service;
 import WGK.domain.Sneaker;
 import WGK.repository.SneakerRepository;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class SneakerService {
@@ -22,9 +16,7 @@ public class SneakerService {
 
     @Transactional(readOnly = true)
     public List<Sneaker> getSneakers(boolean activo) {
-        if (activo) {
-            return sneakerRepository.findByActivoTrue();
-        }
+        if (activo) return sneakerRepository.findByActivoTrue();
         return sneakerRepository.findAll();
     }
 
@@ -43,38 +35,8 @@ public class SneakerService {
         return sneakerRepository.findByMarcaIdMarca(idMarca);
     }
 
-    /**
-     * Guarda el sneaker.
-     *
-     * Lógica de imagen (en orden de prioridad): 1. Si se sube un archivo → se
-     * copia a C:/wgk-imagenes/ y se guarda /uploads/nombre.jpg en BD 2. Si no
-     * hay archivo pero rutaImagen ya tiene valor → se conserva (URL externa o
-     * ruta previa) 3. Si no hay nada → ruta queda null (se mostrará
-     * placeholder)
-     */
     @Transactional
-    /**
-     * Guarda el sneaker con soporte para múltiples imágenes. - imagenPrincipal:
-     * foto principal (la que aparece en el catálogo) - imagenesExtra: lista de
-     * fotos adicionales (thumbnails en detalle) Si no se sube ningún archivo,
-     * se conservan las rutas actuales.
-     */
-    public void save(Sneaker sneaker, MultipartFile imagenPrincipal) throws Exception {
-
-        // Carpeta static/img dentro del proyecto
-        Path carpeta = Paths.get("src/main/resources/static/img/");
-        Files.createDirectories(carpeta);
-
-        // Guarda imagen principal si se subió una nueva
-        if (imagenPrincipal != null && !imagenPrincipal.isEmpty()) {
-            String nombre = System.currentTimeMillis() + "_" + imagenPrincipal.getOriginalFilename();
-            Files.copy(imagenPrincipal.getInputStream(),
-                    carpeta.resolve(nombre),
-                    StandardCopyOption.REPLACE_EXISTING);
-            sneaker.setRutaImagen("/img/" + nombre);
-        }
-        // Si no se subió imagen, conserva la rutaImagen actual
-
+    public void save(Sneaker sneaker) throws Exception {
         sneakerRepository.save(sneaker);
     }
 

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/marca")
@@ -31,9 +30,8 @@ public class MarcaController {
     }
 
     @PostMapping("/guardar")
-    public String guardar(Marca marca,
-            @RequestParam("imagenFile") MultipartFile imagenFile) throws Exception {
-        marcaService.save(marca, imagenFile);
+    public String guardar(Marca marca) throws Exception {
+        marcaService.save(marca);
         return "redirect:/marca/listado";
     }
 

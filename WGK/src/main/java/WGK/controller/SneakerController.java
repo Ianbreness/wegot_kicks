@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/sneaker")
@@ -23,7 +22,6 @@ public class SneakerController {
     @Autowired
     private MarcaService marcaService;
 
-    // ── Listado admin ────────────────────────────────────────────────────
     @GetMapping("/listado")
     public String listado(Model model) {
         model.addAttribute("sneakers", sneakerService.getSneakers(false));
@@ -33,7 +31,6 @@ public class SneakerController {
         return "/sneaker/listado";
     }
 
-    // ── Formulario edición ───────────────────────────────────────────────
     @GetMapping("/modificar/{id}")
     public String modificar(@PathVariable Integer id, Model model) {
         Sneaker sneaker = sneakerService.getSneaker(id);
@@ -43,30 +40,23 @@ public class SneakerController {
         return "/sneaker/modifica";
     }
 
-    // ── Guardar ──────────────────────────────────────────────────────────
     @PostMapping("/guardar")
-    public String guardar(Sneaker sneaker,
-            @RequestParam("imagenFile") MultipartFile imagenFile) throws Exception {
-        sneakerService.save(sneaker, imagenFile);
+    public String guardar(Sneaker sneaker) throws Exception {
+        sneakerService.save(sneaker);
         return "redirect:/sneaker/listado";
     }
 
-    // ── Eliminar ─────────────────────────────────────────────────────────
     @PostMapping("/eliminar")
     public String eliminar(@RequestParam("idSneaker") Integer idSneaker) throws Exception {
         sneakerService.delete(idSneaker);
         return "redirect:/sneaker/listado";
     }
 
-    
     @GetMapping("/detalle/{id}")
     public String detalle(@PathVariable Integer id, Model model) {
         Sneaker sneaker = sneakerService.getSneaker(id);
-        if (sneaker == null) {
-            return "redirect:/";
-        }
+        if (sneaker == null) return "redirect:/";
 
-        
         List<String> tallasLista = new ArrayList<>();
         if (sneaker.getTallas() != null && !sneaker.getTallas().isBlank()) {
             tallasLista = Arrays.stream(sneaker.getTallas().split(","))
@@ -75,13 +65,13 @@ public class SneakerController {
                     .collect(Collectors.toList());
         }
 
-        model.addAttribute("sneaker", sneaker);
-        model.addAttribute("tallasLista", tallasLista);
-        // imagenesLista usa solo la imagen principal como thumbnail
         List<String> imagenesLista = new ArrayList<>();
         if (sneaker.getRutaImagen() != null && !sneaker.getRutaImagen().isBlank()) {
             imagenesLista.add(sneaker.getRutaImagen());
         }
+
+        model.addAttribute("sneaker", sneaker);
+        model.addAttribute("tallasLista", tallasLista);
         model.addAttribute("imagenesLista", imagenesLista);
         return "/sneaker/detalle";
     }
