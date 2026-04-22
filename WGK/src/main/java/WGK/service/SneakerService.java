@@ -13,14 +13,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.List;
-import java.util.ArrayList;
 
 @Service
 public class SneakerService {
 
     @Autowired
     private SneakerRepository sneakerRepository;
+
+    // Lee la ruta de carpeta externa desde application.properties
+    @Value("${wgk.imagenes.ruta}")
+    private String rutaImagenes;
 
     @Transactional(readOnly = true)
     public List<Sneaker> getSneakers(boolean activo) {
@@ -52,46 +54,23 @@ public class SneakerService {
      *   3. Si no hay nada → ruta queda null (se mostrará placeholder)
      */
     @Transactional
-    /**
-     * Guarda el sneaker con soporte para múltiples imágenes.
-     * - imagenPrincipal: foto principal (la que aparece en el catálogo)
-     * - imagenesExtra: lista de fotos adicionales (thumbnails en detalle)
-     * Si no se sube ningún archivo, se conservan las rutas actuales.
-     */
-    public void save(Sneaker sneaker,
-                     MultipartFile imagenPrincipal,
-                     List<MultipartFile> imagenesExtra) throws Exception {
+    public void save(Sneaker sneaker, MultipartFile imagenFile) throws Exception {
 
-        // Carpeta static/img dentro del proyecto
-        String staticImg = "src/main/resources/static/img/";
-        Path carpeta = Paths.get(staticImg);
-        Files.createDirectories(carpeta);
+        if (imagenFile != null && !imagenFile.isEmpty()) {
+            String nombreArchivo = imagenFile.getOriginalFilename();
 
-        // ── Imagen principal ──
-        if (imagenPrincipal != null && !imagenPrincipal.isEmpty()) {
-            String nombre = System.currentTimeMillis() + "_" + imagenPrincipal.getOriginalFilename();
-            Files.copy(imagenPrincipal.getInputStream(),
-                       carpeta.resolve(nombre),
-                       StandardCopyOption.REPLACE_EXISTING);
-            sneaker.setRutaImagen("/img/" + nombre);
+            // Crear la carpeta si no existe aún
+            Path carpeta = Paths.get(rutaImagenes);
+            Files.createDirectories(carpeta);
+
+            // Copiar el archivo — sobreescribe si ya existe uno con el mismo nombre
+            Path destino = carpeta.resolve(nombreArchivo);
+            Files.copy(imagenFile.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+
+            // Guardar en BD la URL relativa que Spring servirá en /uploads/
+            sneaker.setRutaImagen("/uploads/" + nombreArchivo);
         }
-
-        // ── Imágenes adicionales ──
-        if (imagenesExtra != null) {
-            List<String> rutas = new ArrayList<>();
-            for (MultipartFile f : imagenesExtra) {
-                if (f != null && !f.isEmpty()) {
-                    String nombre = System.currentTimeMillis() + "_" + f.getOriginalFilename();
-                    Files.copy(f.getInputStream(),
-                               carpeta.resolve(nombre),
-                               StandardCopyOption.REPLACE_EXISTING);
-                    rutas.add("/img/" + nombre);
-                }
-            }
-            if (!rutas.isEmpty()) {
-                sneaker.setImagenes(String.join(",", rutas));
-            }
-        }
+        // Si no se subió archivo, se respeta el valor actual de rutaImagen
 
         sneakerRepository.save(sneaker);
     }

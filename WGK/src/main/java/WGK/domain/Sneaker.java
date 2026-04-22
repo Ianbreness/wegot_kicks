@@ -35,17 +35,8 @@ public class Sneaker implements Serializable {
     @Column(length = 200)
     private String tallas;
 
-    /** Imagen principal del sneaker */
     @Column(name = "ruta_imagen", length = 1024)
     private String rutaImagen;
-
-    /**
-     * Imágenes adicionales separadas por coma.
-     * Ejemplo: "/uploads/foto2.jpg,/uploads/foto3.jpg,/uploads/foto4.jpg"
-     * Se muestran como thumbnails en la página de detalle.
-     */
-    @Column(name = "imagenes", length = 2048)
-    private String imagenes;
 
     private boolean activo;
 

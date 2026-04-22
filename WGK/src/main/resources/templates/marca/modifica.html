@@ -19,7 +19,7 @@
                         </div>
 
                         <form method="post" th:action="@{/marca/guardar}"
-                              enctype="multipart/form-data" onsubmit="limpiarInputsVacios(this)">
+                              enctype="multipart/form-data">
                             <div class="wgk-panel-body">
                                 <input type="hidden" name="idMarca"
                                        th:value="${marca.idMarca}"/>

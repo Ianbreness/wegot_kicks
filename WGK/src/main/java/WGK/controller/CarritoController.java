@@ -1,9 +1,6 @@
 package WGK.controller;
 
-import WGK.domain.Pedido;
-import WGK.domain.PedidoDetalle;
 import WGK.domain.Sneaker;
-import WGK.repository.PedidoRepository;
 import WGK.service.SneakerService;
 import com.lowagie.text.*;
 import com.lowagie.text.Font;
@@ -31,9 +28,7 @@ public class CarritoController {
     @Autowired
     private SneakerService sneakerService;
 
-    @Autowired
-    private PedidoRepository pedidoRepository;
-
+    // ── Ver carrito ──────────────────────────────────────────────────────
     @GetMapping("/ver")
     public String verCarrito(HttpSession session, Model model) {
         List<Sneaker> carrito = getCarrito(session);
@@ -42,220 +37,317 @@ public class CarritoController {
         return "/carrito/ver";
     }
 
+    // ── Agregar al carrito ───────────────────────────────────────────────
     @PostMapping("/agregar/{idSneaker}")
     public String agregar(@PathVariable Integer idSneaker, HttpSession session) {
         Sneaker sneaker = sneakerService.getSneaker(idSneaker);
-        if (sneaker != null) getCarrito(session).add(sneaker);
+        if (sneaker != null) {
+            getCarrito(session).add(sneaker);
+        }
         return "redirect:/";
     }
 
+    // ── Eliminar un item ─────────────────────────────────────────────────
     @PostMapping("/eliminar/{index}")
     public String eliminar(@PathVariable Integer index, HttpSession session) {
         List<Sneaker> carrito = getCarrito(session);
-        if (index >= 0 && index < carrito.size()) carrito.remove((int) index);
+        if (index >= 0 && index < carrito.size()) {
+            carrito.remove((int) index);
+        }
         return "redirect:/carrito/ver";
     }
 
+    // ── Vaciar carrito ───────────────────────────────────────────────────
     @PostMapping("/vaciar")
     public String vaciar(HttpSession session) {
         session.removeAttribute("carrito");
         return "redirect:/carrito/ver";
     }
 
-    // ── Historial de pedidos del usuario logueado ─────────────────────────
-    @GetMapping("/historial")
-    public String historial(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()
-                || "anonymousUser".equals(auth.getPrincipal())) {
-            return "redirect:/login";
-        }
-        String usuario = auth.getName();
-        model.addAttribute("pedidos", pedidoRepository.findByUsuarioOrderByFechaDesc(usuario));
-        model.addAttribute("usuario", usuario);
-        return "/carrito/historial";
-    }
-
-    // ── Pagar: guarda pedido en BD, vacía carrito, genera PDF ─────────────
+    // ── PAGAR — verifica login y genera PDF ──────────────────────────────
     @PostMapping("/pagar")
     public String pagar(HttpSession session,
                         HttpServletResponse response,
-                        RedirectAttributes ra) throws Exception {
+                        RedirectAttributes redirectAttributes) throws Exception {
 
+        // 1. Verificar que el usuario esté autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean autenticado = auth != null && auth.isAuthenticated()
+        boolean autenticado = auth != null
+                && auth.isAuthenticated()
                 && !"anonymousUser".equals(auth.getPrincipal());
 
         if (!autenticado) {
-            ra.addFlashAttribute("errorPago", "Debes iniciar sesión para completar tu compra.");
+            // No está logueado → redirige al login con mensaje de error
+            redirectAttributes.addFlashAttribute("errorPago",
+                    "Debes iniciar sesión para completar tu compra.");
             return "redirect:/carrito/ver";
         }
 
+        // 2. Obtener carrito
         List<Sneaker> carrito = getCarrito(session);
         if (carrito == null || carrito.isEmpty()) {
-            ra.addFlashAttribute("errorPago", "Tu carrito está vacío.");
+            redirectAttributes.addFlashAttribute("errorPago",
+                    "Tu carrito está vacío.");
             return "redirect:/carrito/ver";
         }
 
-        BigDecimal total    = calcularTotal(carrito);
-        String usuario      = auth.getName();
-        LocalDateTime ahora = LocalDateTime.now();
-        String fechaHora    = ahora.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        String numFactura   = "WGK-" + System.currentTimeMillis();
+        BigDecimal total = calcularTotal(carrito);
+        String usuario = auth.getName();
+        String fechaHora = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        String numFactura = "WGK-" + System.currentTimeMillis();
 
-        // ── Guardar pedido en BD ──
-        Pedido pedido = new Pedido();
-        pedido.setNumero(numFactura);
-        pedido.setUsuario(usuario);
-        pedido.setFecha(ahora);
-        pedido.setTotal(total);
-
-        List<PedidoDetalle> detalles = new ArrayList<>();
-        for (Sneaker s : carrito) {
-            PedidoDetalle d = new PedidoDetalle();
-            d.setPedido(pedido);
-            d.setDescripcion(s.getDescripcion());
-            d.setMarca(s.getMarca() != null ? s.getMarca().getDescripcion() : "—");
-            d.setPrecio(s.getPrecio());
-            detalles.add(d);
-        }
-        pedido.setDetalles(detalles);
-        pedidoRepository.save(pedido);
-
-        // ── Vaciar carrito ──
-        List<Sneaker> carritoParaPDF = new ArrayList<>(carrito);
-        session.removeAttribute("carrito");
-
-        // ── Generar PDF ──
+        // 3. Configurar respuesta HTTP para descarga de PDF
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition",
                 "attachment; filename=\"factura_" + numFactura + ".pdf\"");
 
+        // 4. Generar PDF con OpenPDF
         Document doc = new Document(PageSize.A4, 50, 50, 60, 50);
         PdfWriter.getInstance(doc, response.getOutputStream());
         doc.open();
 
-        Color rojo     = new Color(220, 0, 0);
-        Color grisOsc  = new Color(40, 40, 40);
-        Color grisCla  = new Color(245, 245, 245);
-        Color lineaCol = new Color(220, 220, 220);
+        // ── Fuentes ──
+        Font fuenteTitulo    = new Font(Font.HELVETICA, 24, Font.BOLD, Color.BLACK);
+        Font fuenteSubtitulo = new Font(Font.HELVETICA, 11, Font.BOLD, Color.DARK_GRAY);
+        Font fuenteNormal    = new Font(Font.HELVETICA, 10, Font.NORMAL, Color.DARK_GRAY);
+        Font fuenteRojo      = new Font(Font.HELVETICA, 10, Font.BOLD, new Color(220, 0, 0));
+        Font fuenteTabHead   = new Font(Font.HELVETICA, 9,  Font.BOLD, Color.WHITE);
+        Font fuenteTabCell   = new Font(Font.HELVETICA, 10, Font.NORMAL, Color.BLACK);
+        Font fuenteTotal     = new Font(Font.HELVETICA, 13, Font.BOLD, Color.BLACK);
+        Font fuentePeq       = new Font(Font.HELVETICA, 8,  Font.NORMAL, Color.GRAY);
 
-        Font fNormal   = new Font(Font.HELVETICA, 10, Font.NORMAL, Color.DARK_GRAY);
-        Font fBold     = new Font(Font.HELVETICA, 11, Font.BOLD, Color.DARK_GRAY);
-        Font fRojo     = new Font(Font.HELVETICA, 10, Font.BOLD, rojo);
-        Font fTabHead  = new Font(Font.HELVETICA, 9,  Font.BOLD, Color.WHITE);
-        Font fTabCell  = new Font(Font.HELVETICA, 10, Font.NORMAL, Color.BLACK);
-        Font fPeq      = new Font(Font.HELVETICA, 8,  Font.NORMAL, Color.GRAY);
-        Font fLogo     = new Font(Font.HELVETICA, 32, Font.BOLD, rojo);
-        Font fTitle    = new Font(Font.HELVETICA, 18, Font.BOLD, grisOsc);
+        Color colorRojo    = new Color(220, 0, 0);
+        Color colorGrisOsc = new Color(40, 40, 40);
+        Color colorGrisCla = new Color(245, 245, 245);
+        Color colorLinea   = new Color(220, 220, 220);
 
-        // Encabezado
-        PdfPTable hdr = new PdfPTable(2);
-        hdr.setWidthPercentage(100); hdr.setWidths(new float[]{1f, 2f}); hdr.setSpacingAfter(20);
-        PdfPCell cLogo = new PdfPCell(new Paragraph("WGK.", fLogo));
-        cLogo.setBorder(PdfPCell.NO_BORDER); cLogo.setPaddingBottom(8); hdr.addCell(cLogo);
-        Paragraph info = new Paragraph();
-        info.add(new Chunk("WegoTKicks PR\n", fBold));
-        info.add(new Chunk("Tienda Certificada de Sneakers\n", fNormal));
-        info.add(new Chunk("Puerto Rico · Tel: 3244-2144", fNormal));
-        PdfPCell cInfo = new PdfPCell(info);
-        cInfo.setBorder(PdfPCell.NO_BORDER); cInfo.setHorizontalAlignment(Element.ALIGN_RIGHT); hdr.addCell(cInfo);
-        doc.add(hdr);
+        // ── Encabezado: logo + título ──
+        PdfPTable header = new PdfPTable(2);
+        header.setWidthPercentage(100);
+        header.setWidths(new float[]{1f, 2f});
+        header.setSpacingAfter(20);
 
-        // Línea roja
-        PdfPTable lr = new PdfPTable(1); lr.setWidthPercentage(100); lr.setSpacingAfter(16);
-        PdfPCell cr = new PdfPCell(new Phrase(" "));
-        cr.setBackgroundColor(rojo); cr.setBorder(PdfPCell.NO_BORDER); cr.setFixedHeight(3f); lr.addCell(cr);
-        doc.add(lr);
+        // Celda logo (texto WGK con color rojo)
+        Font fuenteLogo = new Font(Font.HELVETICA, 32, Font.BOLD, colorRojo);
+        Paragraph logoText = new Paragraph("WGK.", fuenteLogo);
+        PdfPCell logoCell = new PdfPCell(logoText);
+        logoCell.setBorder(PdfPCell.NO_BORDER);
+        logoCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        logoCell.setPaddingBottom(8);
+        header.addCell(logoCell);
 
-        doc.add(new Paragraph("FACTURA DE COMPRA", fTitle));
+        // Celda info empresa
+        Paragraph infoEmpresa = new Paragraph();
+        infoEmpresa.add(new Chunk("WegoTKicks PR\n", fuenteSubtitulo));
+        infoEmpresa.add(new Chunk("Tienda Certificada de Sneakers\n", fuenteNormal));
+        infoEmpresa.add(new Chunk("Puerto Rico · Tel: 3244-2144\n", fuenteNormal));
+        infoEmpresa.add(new Chunk("youtube.com/@WeGotKicks", fuenteNormal));
+        PdfPCell infoCell = new PdfPCell(infoEmpresa);
+        infoCell.setBorder(PdfPCell.NO_BORDER);
+        infoCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        header.addCell(infoCell);
+
+        doc.add(header);
+
+        // ── Línea divisora roja ──
+        PdfPTable lineaRoja = new PdfPTable(1);
+        lineaRoja.setWidthPercentage(100);
+        lineaRoja.setSpacingAfter(16);
+        PdfPCell celdaLinea = new PdfPCell(new Phrase(" "));
+        celdaLinea.setBackgroundColor(colorRojo);
+        celdaLinea.setBorder(PdfPCell.NO_BORDER);
+        celdaLinea.setFixedHeight(3f);
+        lineaRoja.addCell(celdaLinea);
+        doc.add(lineaRoja);
+
+        // ── Datos de la factura ──
+        Font fuenteFactTitulo = new Font(Font.HELVETICA, 18, Font.BOLD, colorGrisOsc);
+        doc.add(new Paragraph("FACTURA DE COMPRA", fuenteFactTitulo));
         doc.add(new Paragraph(" "));
 
-        // Datos factura
-        PdfPTable df = new PdfPTable(2); df.setWidthPercentage(100); df.setSpacingAfter(20);
-        Paragraph clie = new Paragraph();
-        clie.add(new Chunk("FACTURADO A\n", fRojo));
-        clie.add(new Chunk("Cliente: " + usuario + "\n", fNormal));
-        clie.add(new Chunk("Envío: Gratis · Verificación: Incluida", fNormal));
-        PdfPCell cc = new PdfPCell(clie); cc.setBorder(PdfPCell.NO_BORDER); df.addCell(cc);
-        Paragraph fact = new Paragraph();
-        fact.add(new Chunk("DETALLES\n", fRojo));
-        fact.add(new Chunk("Nº: " + numFactura + "\n", fNormal));
-        fact.add(new Chunk("Fecha: " + fechaHora + "\n", fNormal));
-        fact.add(new Chunk("Estado: Pagado", fNormal));
-        PdfPCell cf = new PdfPCell(fact); cf.setBorder(PdfPCell.NO_BORDER);
-        cf.setHorizontalAlignment(Element.ALIGN_RIGHT); df.addCell(cf);
-        doc.add(df);
+        PdfPTable datosFact = new PdfPTable(2);
+        datosFact.setWidthPercentage(100);
+        datosFact.setSpacingAfter(20);
 
-        // Tabla productos
-        PdfPTable tb = new PdfPTable(4);
-        tb.setWidthPercentage(100); tb.setWidths(new float[]{3f, 1.5f, 1f, 1.2f}); tb.setSpacingAfter(20);
-        for (String h : new String[]{"PRODUCTO", "MARCA", "CANT.", "PRECIO"}) {
-            PdfPCell ch = new PdfPCell(new Phrase(h, fTabHead));
-            ch.setBackgroundColor(grisOsc); ch.setPadding(8); ch.setBorder(PdfPCell.NO_BORDER); tb.addCell(ch);
+        // Columna izquierda: cliente
+        Paragraph colCliente = new Paragraph();
+        colCliente.add(new Chunk("FACTURADO A\n", fuenteRojo));
+        colCliente.add(new Chunk("Cliente: " + usuario + "\n", fuenteNormal));
+        colCliente.add(new Chunk("Verificación: 100% Legit\n", fuenteNormal));
+        colCliente.add(new Chunk("Envío: Gratis", fuenteNormal));
+        PdfPCell cellCliente = new PdfPCell(colCliente);
+        cellCliente.setBorder(PdfPCell.NO_BORDER);
+        datosFact.addCell(cellCliente);
+
+        // Columna derecha: número y fecha
+        Paragraph colFactura = new Paragraph();
+        colFactura.add(new Chunk("DETALLES\n", fuenteRojo));
+        colFactura.add(new Chunk("Nº Factura: " + numFactura + "\n", fuenteNormal));
+        colFactura.add(new Chunk("Fecha: " + fechaHora + "\n", fuenteNormal));
+        colFactura.add(new Chunk("Estado: Pagado", fuenteNormal));
+        PdfPCell cellFactura = new PdfPCell(colFactura);
+        cellFactura.setBorder(PdfPCell.NO_BORDER);
+        cellFactura.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        datosFact.addCell(cellFactura);
+
+        doc.add(datosFact);
+
+        // ── Tabla de productos ──
+        PdfPTable tabla = new PdfPTable(4);
+        tabla.setWidthPercentage(100);
+        tabla.setWidths(new float[]{3f, 1.5f, 1f, 1.2f});
+        tabla.setSpacingAfter(20);
+
+        // Cabecera de tabla
+        String[] cabeceras = {"PRODUCTO", "MARCA", "CANT.", "PRECIO"};
+        for (String cab : cabeceras) {
+            PdfPCell cell = new PdfPCell(new Phrase(cab, fuenteTabHead));
+            cell.setBackgroundColor(colorGrisOsc);
+            cell.setPadding(8);
+            cell.setBorder(PdfPCell.NO_BORDER);
+            tabla.addCell(cell);
         }
-        boolean alt = false;
-        for (Sneaker s : carritoParaPDF) {
-            Color bg = alt ? grisCla : Color.WHITE;
-            celdaT(tb, s.getDescripcion(), fTabCell, bg, lineaCol, Element.ALIGN_LEFT);
-            celdaT(tb, s.getMarca() != null ? s.getMarca().getDescripcion() : "—", fTabCell, bg, lineaCol, Element.ALIGN_LEFT);
-            celdaT(tb, "1", fTabCell, bg, lineaCol, Element.ALIGN_CENTER);
-            celdaT(tb, "$" + s.getPrecio(), fTabCell, bg, lineaCol, Element.ALIGN_RIGHT);
-            alt = !alt;
+
+        // Filas de productos
+        boolean fila = false;
+        for (Sneaker s : carrito) {
+            Color bgFila = fila ? colorGrisCla : Color.WHITE;
+
+            PdfPCell cNombre = new PdfPCell(new Phrase(s.getDescripcion(), fuenteTabCell));
+            cNombre.setBackgroundColor(bgFila);
+            cNombre.setPadding(8);
+            cNombre.setBorderColor(colorLinea);
+            cNombre.setBorderWidth(0.5f);
+            tabla.addCell(cNombre);
+
+            String marca = s.getMarca() != null ? s.getMarca().getDescripcion() : "—";
+            PdfPCell cMarca = new PdfPCell(new Phrase(marca, fuenteTabCell));
+            cMarca.setBackgroundColor(bgFila);
+            cMarca.setPadding(8);
+            cMarca.setBorderColor(colorLinea);
+            cMarca.setBorderWidth(0.5f);
+            tabla.addCell(cMarca);
+
+            PdfPCell cCant = new PdfPCell(new Phrase("1", fuenteTabCell));
+            cCant.setBackgroundColor(bgFila);
+            cCant.setPadding(8);
+            cCant.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cCant.setBorderColor(colorLinea);
+            cCant.setBorderWidth(0.5f);
+            tabla.addCell(cCant);
+
+            String precio = "$" + s.getPrecio().toString();
+            PdfPCell cPrecio = new PdfPCell(new Phrase(precio, fuenteTabCell));
+            cPrecio.setBackgroundColor(bgFila);
+            cPrecio.setPadding(8);
+            cPrecio.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            cPrecio.setBorderColor(colorLinea);
+            cPrecio.setBorderWidth(0.5f);
+            tabla.addCell(cPrecio);
+
+            fila = !fila;
         }
-        doc.add(tb);
+        doc.add(tabla);
 
-        // Totales
-        PdfPTable tot = new PdfPTable(2);
-        tot.setWidthPercentage(42); tot.setHorizontalAlignment(Element.ALIGN_RIGHT); tot.setSpacingAfter(30);
-        filaTot(tot, "Subtotal:", "$" + total, fNormal, Color.WHITE, lineaCol);
-        filaTot(tot, "Envío:", "Gratis", fNormal, Color.WHITE, lineaCol);
-        filaTot(tot, "Verificación:", "Incluida", fNormal, Color.WHITE, lineaCol);
-        PdfPCell sep = new PdfPCell(new Phrase(" "));
-        sep.setColspan(2); sep.setBackgroundColor(lineaCol); sep.setFixedHeight(1f); sep.setBorder(PdfPCell.NO_BORDER); tot.addCell(sep);
-        PdfPCell tl = new PdfPCell(new Phrase("TOTAL:", fTabHead));
-        tl.setBackgroundColor(rojo); tl.setPadding(8); tl.setBorder(PdfPCell.NO_BORDER); tot.addCell(tl);
-        PdfPCell tv = new PdfPCell(new Phrase("$" + total, fTabHead));
-        tv.setBackgroundColor(rojo); tv.setPadding(8); tv.setHorizontalAlignment(Element.ALIGN_RIGHT); tv.setBorder(PdfPCell.NO_BORDER); tot.addCell(tv);
-        doc.add(tot);
+        // ── Totales ──
+        PdfPTable totales = new PdfPTable(2);
+        totales.setWidthPercentage(45);
+        totales.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        totales.setSpacingAfter(30);
 
-        // Pie
-        PdfPTable pie = new PdfPTable(1); pie.setWidthPercentage(100);
-        PdfPCell cp = new PdfPCell();
-        cp.setBorderColor(lineaCol); cp.setBorderWidth(0.5f); cp.setBorder(PdfPCell.TOP); cp.setPaddingTop(10);
-        Paragraph tp = new Paragraph();
-        tp.add(new Chunk("¡Gracias por tu compra en WegoTKicks PR!\n", fBold));
-        tp.add(new Chunk("Todos nuestros pares son 100% verificados. Contacto: 3244-2144 · Puerto Rico", fPeq));
-        tp.setAlignment(Element.ALIGN_CENTER);
-        cp.addElement(tp); pie.addCell(cp); doc.add(pie);
+        // Subtotal
+        addFilaTotales(totales, "Subtotal:", "$" + total, fuenteNormal, Color.WHITE);
+        addFilaTotales(totales, "Envío:", "Gratis", fuenteNormal, Color.WHITE);
+        addFilaTotales(totales, "Verificación Legit:", "Incluido", fuenteNormal, Color.WHITE);
+
+        // Línea
+        PdfPCell lineaSep = new PdfPCell(new Phrase(" "));
+        lineaSep.setColspan(2);
+        lineaSep.setBackgroundColor(colorLinea);
+        lineaSep.setFixedHeight(1f);
+        lineaSep.setBorder(PdfPCell.NO_BORDER);
+        totales.addCell(lineaSep);
+
+        // Total final con fondo rojo
+        PdfPCell labelTotal = new PdfPCell(new Phrase("TOTAL:", fuenteTabHead));
+        labelTotal.setBackgroundColor(colorRojo);
+        labelTotal.setPadding(8);
+        labelTotal.setBorder(PdfPCell.NO_BORDER);
+        totales.addCell(labelTotal);
+
+        PdfPCell valorTotal = new PdfPCell(new Phrase("$" + total, fuenteTabHead));
+        valorTotal.setBackgroundColor(colorRojo);
+        valorTotal.setPadding(8);
+        valorTotal.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        valorTotal.setBorder(PdfPCell.NO_BORDER);
+        totales.addCell(valorTotal);
+
+        doc.add(totales);
+
+        // ── Pie de página ──
+        PdfPTable pie = new PdfPTable(1);
+        pie.setWidthPercentage(100);
+
+        PdfPCell celdaPie = new PdfPCell();
+        celdaPie.setBorderColor(colorLinea);
+        celdaPie.setBorderWidth(0.5f);
+        celdaPie.setBorder(PdfPCell.TOP);
+        celdaPie.setPaddingTop(10);
+
+        Paragraph textoPie = new Paragraph();
+        textoPie.add(new Chunk("¡Gracias por tu compra en WegoTKicks PR!\n", fuenteSubtitulo));
+        textoPie.add(new Chunk(
+                "Todos nuestros sneakers son 100% verificados y certificados antes del envío.\n",
+                fuentePeq));
+        textoPie.add(new Chunk(
+                "Contacto: 3244-2144 · youtube.com/@WeGotKicks · Puerto Rico",
+                fuentePeq));
+        textoPie.setAlignment(Element.ALIGN_CENTER);
+        celdaPie.addElement(textoPie);
+        pie.addCell(celdaPie);
+        doc.add(pie);
 
         doc.close();
-        return null;
+
+        // 5. Vaciar el carrito después del pago
+        session.removeAttribute("carrito");
+
+        return null; // La respuesta ya fue enviada como PDF
     }
 
-    // ── Helpers privados ──────────────────────────────────────────────────
+    // ── Helpers ──────────────────────────────────────────────────────────
     @SuppressWarnings("unchecked")
     private List<Sneaker> getCarrito(HttpSession session) {
-        List<Sneaker> c = (List<Sneaker>) session.getAttribute("carrito");
-        if (c == null) { c = new ArrayList<>(); session.setAttribute("carrito", c); }
-        return c;
+        List<Sneaker> carrito = (List<Sneaker>) session.getAttribute("carrito");
+        if (carrito == null) {
+            carrito = new ArrayList<>();
+            session.setAttribute("carrito", carrito);
+        }
+        return carrito;
     }
 
     private BigDecimal calcularTotal(List<Sneaker> carrito) {
-        return carrito.stream().map(Sneaker::getPrecio).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return carrito.stream()
+                .map(Sneaker::getPrecio)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private void celdaT(PdfPTable t, String txt, Font f, Color bg, Color border, int align) {
-        PdfPCell c = new PdfPCell(new Phrase(txt, f));
-        c.setBackgroundColor(bg); c.setPadding(8); c.setBorderColor(border);
-        c.setBorderWidth(0.5f); c.setHorizontalAlignment(align); t.addCell(c);
-    }
+    private void addFilaTotales(PdfPTable table, String label, String valor,
+                                Font fuente, Color bg) {
+        PdfPCell c1 = new PdfPCell(new Phrase(label, fuente));
+        c1.setBackgroundColor(bg);
+        c1.setPadding(6);
+        c1.setBorderColor(new Color(220, 220, 220));
+        c1.setBorderWidth(0.5f);
+        table.addCell(c1);
 
-    private void filaTot(PdfPTable t, String lbl, String val, Font f, Color bg, Color border) {
-        PdfPCell c1 = new PdfPCell(new Phrase(lbl, f));
-        c1.setBackgroundColor(bg); c1.setPadding(6); c1.setBorderColor(border); c1.setBorderWidth(0.5f); t.addCell(c1);
-        PdfPCell c2 = new PdfPCell(new Phrase(val, f));
-        c2.setBackgroundColor(bg); c2.setPadding(6); c2.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        c2.setBorderColor(border); c2.setBorderWidth(0.5f); t.addCell(c2);
+        PdfPCell c2 = new PdfPCell(new Phrase(valor, fuente));
+        c2.setBackgroundColor(bg);
+        c2.setPadding(6);
+        c2.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        c2.setBorderColor(new Color(220, 220, 220));
+        c2.setBorderWidth(0.5f);
+        table.addCell(c2);
     }
 }
