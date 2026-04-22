@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 @Controller
 @RequestMapping("/sneaker")
@@ -46,8 +47,10 @@ public class SneakerController {
     // ── Guardar ──────────────────────────────────────────────────────────
     @PostMapping("/guardar")
     public String guardar(Sneaker sneaker,
-            @RequestParam("imagenFile") MultipartFile imagenFile) throws Exception {
-        sneakerService.save(sneaker, imagenFile);
+            @RequestParam("imagenFile") MultipartFile imagenPrincipal,
+            @RequestParam(value = "imagenesExtra", required = false)
+                List<MultipartFile> imagenesExtra) throws Exception {
+        sneakerService.save(sneaker, imagenPrincipal, imagenesExtra);
         return "redirect:/sneaker/listado";
     }
 
@@ -72,7 +75,6 @@ public class SneakerController {
         }
 
         // Convertir el string de tallas "38,39,40,41,42" en una List<String>
-        // para poder iterar en Thymeleaf con th:each
         List<String> tallasLista = Collections.emptyList();
         if (sneaker.getTallas() != null && !sneaker.getTallas().isBlank()) {
             tallasLista = Arrays.stream(sneaker.getTallas().split(","))
@@ -81,8 +83,22 @@ public class SneakerController {
                     .collect(Collectors.toList());
         }
 
+        // Convertir el string de imágenes adicionales en List<String>
+        // Incluye la imagen principal como primer thumbnail
+        List<String> imagenesLista = new java.util.ArrayList<>();
+        if (sneaker.getRutaImagen() != null && !sneaker.getRutaImagen().isBlank()) {
+            imagenesLista.add(sneaker.getRutaImagen()); // siempre primero
+        }
+        if (sneaker.getImagenes() != null && !sneaker.getImagenes().isBlank()) {
+            Arrays.stream(sneaker.getImagenes().split(","))
+                    .map(String::trim)
+                    .filter(img -> !img.isEmpty())
+                    .forEach(imagenesLista::add);
+        }
+
         model.addAttribute("sneaker", sneaker);
         model.addAttribute("tallasLista", tallasLista);
+        model.addAttribute("imagenesLista", imagenesLista);
         return "/sneaker/detalle";
     }
 }

@@ -10,7 +10,8 @@
         <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
         <link th:href="@{/webjars/font-awesome/css/all.css}" rel="stylesheet"/>
         <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-        <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <!-- Bootstrap JS al FINAL del head genera conflictos con el DOM.
+             Se carga abajo en el footer fragment para que los modales funcionen. -->
         <style>
             /* ════════════════════════════════════
                DESIGN TOKENS
@@ -31,9 +32,6 @@
                 --body:   'Inter', sans-serif;
             }
 
-            /* ════════════════════════════════════
-               BASE
-            ════════════════════════════════════ */
             body {
                 background: var(--bg);
                 color: var(--white);
@@ -52,9 +50,7 @@
                 border-radius: 2px;
             }
 
-            /* ════════════════════════════════════
-               TOP BAR
-            ════════════════════════════════════ */
+            /* ════ TOP BAR ════ */
             .wgk-topbar {
                 background: var(--red);
                 color: #fff;
@@ -66,9 +62,7 @@
                 padding: 7px 12px;
             }
 
-            /* ════════════════════════════════════
-               NAVBAR
-            ════════════════════════════════════ */
+            /* ════ NAVBAR ════ */
             .wgk-nav {
                 background: var(--bg);
                 border-bottom: 1px solid var(--line);
@@ -94,8 +88,6 @@
                 color: var(--red);
                 font-style: normal;
             }
-
-            /* Search */
             .wgk-search-wrap {
                 position: relative;
                 flex-shrink: 0;
@@ -128,8 +120,6 @@
                 font-size: 0.75rem;
                 pointer-events: none;
             }
-
-            /* Nav links (admin only — shown next to logo) */
             .wgk-navlinks {
                 display: flex;
                 align-items: center;
@@ -153,8 +143,6 @@
                 color: var(--white);
                 background: var(--bg3);
             }
-
-            /* Right cluster */
             .wgk-nav-right {
                 display: flex;
                 align-items: center;
@@ -217,9 +205,7 @@
                 color: var(--white);
             }
 
-            /* ════════════════════════════════════
-               SUB-NAV (categories)
-            ════════════════════════════════════ */
+            /* ════ SUB-NAV ════ */
             .wgk-subnav {
                 background: var(--bg2);
                 border-bottom: 1px solid var(--line);
@@ -291,9 +277,7 @@
                 border-color: var(--smoke);
             }
 
-            /* ════════════════════════════════════
-               CAROUSEL
-            ════════════════════════════════════ */
+            /* ════ CAROUSEL ════ */
             .wgk-carousel {
                 position: relative;
                 overflow: hidden;
@@ -333,7 +317,6 @@
             .wgk-slide-sub {
                 color: var(--smoke);
                 font-size: 0.9rem;
-                font-weight: 400;
                 margin-bottom: 28px;
             }
             .wgk-slide-btn {
@@ -360,7 +343,6 @@
                 align-items: center;
                 justify-content: center;
                 padding: 24px 32px;
-                position: relative;
                 z-index: 2;
             }
             .wgk-slide-img img {
@@ -374,8 +356,6 @@
             .wgk-slide.active .wgk-slide-img img {
                 transform: rotate(-3deg) translateY(-4px);
             }
-
-            /* Vertical brand labels */
             .wgk-carousel-brands {
                 position: absolute;
                 right: 16px;
@@ -402,8 +382,6 @@
                 color: rgba(255,255,255,.6);
                 border-left-color: var(--red);
             }
-
-            /* Controls */
             .wgk-ctrl {
                 position: absolute;
                 top: 50%;
@@ -456,9 +434,7 @@
                 border-radius: 3px;
             }
 
-            /* ════════════════════════════════════
-               PRODUCT GRID — responsive CSS grid
-            ════════════════════════════════════ */
+            /* ════ PRODUCT GRID ════ */
             .wgk-product-grid {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
@@ -483,9 +459,7 @@
                 }
             }
 
-            /* ════════════════════════════════════
-               FILTER TABS
-            ════════════════════════════════════ */
+            /* ════ FILTER TABS ════ */
             .wgk-filter-row {
                 display: flex;
                 gap: 8px;
@@ -515,9 +489,7 @@
                 font-weight: 700;
             }
 
-            /* ════════════════════════════════════
-               PRODUCT CARDS — compact StockX style
-            ════════════════════════════════════ */
+            /* ════ PRODUCT CARDS ════ */
             .wgk-card {
                 background: #fff;
                 border-radius: 12px;
@@ -555,7 +527,6 @@
             .wgk-card-fav:hover {
                 color: var(--red);
             }
-            /* Image area — square, light grey bg */
             .wgk-card-img-wrap {
                 background: #f4f4f4;
                 display: flex;
@@ -574,7 +545,6 @@
             .wgk-card:hover .wgk-card-img {
                 transform: scale(1.06) rotate(-2deg);
             }
-            /* Info area */
             .wgk-card-info {
                 padding: 10px 12px 4px;
                 background: #fff;
@@ -611,7 +581,6 @@
                 font-size: 0.58rem;
                 color: #aaa;
                 font-weight: 500;
-                margin-bottom: 0;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
@@ -668,9 +637,7 @@
                 cursor: not-allowed;
             }
 
-            /* ════════════════════════════════════
-               SECTION HEADERS
-            ════════════════════════════════════ */
+            /* ════ SECTION HEADERS ════ */
             .wgk-sec-head {
                 display: flex;
                 align-items: center;
@@ -687,19 +654,8 @@
                 font-size: 0.78rem;
                 font-weight: 500;
             }
-            .wgk-sec-see-all {
-                color: var(--smoke);
-                font-size: 0.78rem;
-                font-weight: 600;
-                transition: color .2s;
-            }
-            .wgk-sec-see-all:hover {
-                color: var(--white);
-            }
 
-            /* ════════════════════════════════════
-               GENERAL BUTTONS
-            ════════════════════════════════════ */
+            /* ════ BUTTONS ════ */
             .wgk-btn {
                 background: var(--white);
                 color: var(--dark);
@@ -718,26 +674,6 @@
                 background: #e0e0e0;
                 color: var(--dark);
             }
-
-            .wgk-btn-dark {
-                background: var(--dark);
-                color: var(--white);
-                border: none;
-                font-size: 0.78rem;
-                font-weight: 700;
-                padding: 10px 22px;
-                border-radius: 6px;
-                cursor: pointer;
-                transition: background .2s;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-            }
-            .wgk-btn-dark:hover {
-                background: #333;
-                color: var(--white);
-            }
-
             .wgk-btn-outline {
                 background: transparent;
                 color: var(--white);
@@ -757,7 +693,6 @@
                 border-color: var(--smoke);
                 color: var(--white);
             }
-
             .wgk-btn-red {
                 background: var(--red);
                 color: #fff;
@@ -778,9 +713,7 @@
                 color: #fff;
             }
 
-            /* ════════════════════════════════════
-               ADMIN PANEL
-            ════════════════════════════════════ */
+            /* ════ ADMIN PANEL ════ */
             .wgk-panel {
                 background: var(--bg2);
                 border: 1px solid var(--line);
@@ -818,9 +751,7 @@
                 align-items: center;
             }
 
-            /* ════════════════════════════════════
-               TABLES
-            ════════════════════════════════════ */
+            /* ════ TABLES ════ */
             .wgk-table {
                 color: var(--white);
                 width: 100%;
@@ -853,9 +784,7 @@
                 vertical-align: middle;
             }
 
-            /* ════════════════════════════════════
-               FORMS
-            ════════════════════════════════════ */
+            /* ════ FORMS ════ */
             .wgk-label {
                 display: block;
                 color: var(--smoke);
@@ -911,9 +840,7 @@
                 vertical-align: middle;
             }
 
-            /* ════════════════════════════════════
-               BADGES
-            ════════════════════════════════════ */
+            /* ════ BADGES ════ */
             .wgk-badge-brand {
                 font-size: 0.6rem;
                 font-weight: 700;
@@ -943,9 +870,7 @@
                 border-radius: 3px;
             }
 
-            /* ════════════════════════════════════
-               MODAL
-            ════════════════════════════════════ */
+            /* ════ MODAL ════ */
             .modal-content {
                 background: var(--bg2) !important;
                 border: 1px solid var(--line) !important;
@@ -971,9 +896,7 @@
                 border-top: 1px solid var(--line) !important;
             }
 
-            /* ════════════════════════════════════
-               TOAST
-            ════════════════════════════════════ */
+            /* ════ TOAST ════ */
             .toast {
                 background: var(--bg2) !important;
                 border: 1px solid var(--line) !important;
@@ -988,9 +911,7 @@
                 filter: invert(1) brightness(.5);
             }
 
-            /* ════════════════════════════════════
-               LOGIN PAGE
-            ════════════════════════════════════ */
+            /* ════ LOGIN ════ */
             .wgk-login-page {
                 min-height: calc(100vh - 108px);
                 background: var(--bg);
@@ -1056,9 +977,7 @@
                 margin-top: 16px;
             }
 
-            /* ════════════════════════════════════
-               CARRITO
-            ════════════════════════════════════ */
+            /* ════ CARRITO ════ */
             .wgk-cart-summary {
                 background: var(--bg2);
                 border: 1px solid var(--line);
@@ -1098,9 +1017,7 @@
                 margin: 14px 0;
             }
 
-            /* ════════════════════════════════════
-               EMPTY STATE
-            ════════════════════════════════════ */
+            /* ════ EMPTY STATE ════ */
             .wgk-empty {
                 text-align: center;
                 padding: 80px 20px;
@@ -1122,9 +1039,7 @@
                 font-size: 0.85rem;
             }
 
-            /* ════════════════════════════════════
-               STATS
-            ════════════════════════════════════ */
+            /* ════ STATS ════ */
             .wgk-stat {
                 background: var(--bg2);
                 border: 1px solid var(--line);
@@ -1150,9 +1065,7 @@
                 margin-top: 4px;
             }
 
-            /* ════════════════════════════════════
-               YOUTUBE SECTION
-            ════════════════════════════════════ */
+            /* ════ YOUTUBE ════ */
             .wgk-yt {
                 background: var(--bg2);
                 border-top: 1px solid var(--line);
@@ -1178,9 +1091,7 @@
                 border: none;
             }
 
-            /* ════════════════════════════════════
-               FOOTER
-            ════════════════════════════════════ */
+            /* ════ FOOTER ════ */
             .wgk-footer {
                 background: #0a0a0a;
                 border-top: 1px solid var(--line);
@@ -1268,24 +1179,16 @@
         </style>
     </head>
 
-    <!-- ════════════════════════════════════
-         HEADER FRAGMENT
-    ════════════════════════════════════ -->
+    <!-- ════ HEADER ════ -->
     <header th:fragment="header">
-
-        <!-- Top announcement bar -->
         <div class="wgk-topbar">
             <i class="fas fa-certificate me-2"></i>
             Sneakers 100% Certificados · Envío gratis a toda Puerto Rico
             <i class="fas fa-certificate ms-2"></i>
         </div>
-
-        <!-- Main navbar -->
         <nav class="wgk-nav">
             <div class="wgk-nav-inner">
                 <a th:href="@{/}" class="wgk-logo">WGK<em>.</em></a>
-
-                <!-- Admin links next to logo -->
                 <ul class="wgk-navlinks">
                     <li sec:authorize="hasAnyRole('ROLE_VENDEDOR','ROLE_ADMIN')">
                         <a th:href="@{/sneaker/listado}">Sneakers</a>
@@ -1294,26 +1197,17 @@
                         <a th:href="@{/marca/listado}">Marcas</a>
                     </li>
                 </ul>
-
-                <!-- Right: search + cart + auth -->
                 <div class="wgk-nav-right">
-                    <!-- Search bar (submits to /buscar) -->
                     <form th:action="@{/buscar}" method="get" class="wgk-search-wrap m-0 p-0">
                         <i class="fas fa-search wgk-search-icon"></i>
-                        <input class="wgk-search"
-                               type="text"
-                               name="q"
-                               placeholder="Buscar sneaker..."
-                               autocomplete="off"/>
+                        <input class="wgk-search" type="text" name="q"
+                               placeholder="Buscar sneaker..." autocomplete="off"/>
                     </form>
-
                     <a th:href="@{/carrito/ver}" class="wgk-nav-cart">
                         <i class="fas fa-shopping-bag"></i>Carrito
                     </a>
                     <a th:href="@{/login}" class="wgk-btn-nav-login"
-                       sec:authorize="!isAuthenticated()">
-                        Login
-                    </a>
+                       sec:authorize="!isAuthenticated()">Login</a>
                     <div class="d-flex align-items-center gap-2"
                          sec:authorize="isAuthenticated()">
                         <span class="wgk-user-name">
@@ -1327,20 +1221,20 @@
                 </div>
             </div>
         </nav>
-
-        <!-- Sub-nav (brand categories) -->
         <div class="wgk-subnav">
             <div class="wgk-subnav-inner">
                 <a th:href="@{/}" class="wgk-subnav-link">Todos</a>
                 <span class="wgk-subnav-div"></span>
-                <a th:href="@{/marca/1}" class="wgk-subnav-link">Nike</a>
-                <a th:href="@{/marca/2}" class="wgk-subnav-link">Adidas</a>
-                <a th:href="@{/marca/3}" class="wgk-subnav-link">Jordan</a>
-                <a th:href="@{/marca/4}" class="wgk-subnav-link">New Balance</a>
-                <a th:href="@{/marca/5}" class="wgk-subnav-link">Vans</a>
+                <!-- Marcas dinámicas desde BD via GlobalModelAdvice -->
+                <a th:each="m : ${marcasNav}"
+                   th:href="@{/marca/{id}(id=${m.idMarca})}"
+                   th:text="${m.descripcion}"
+                   th:classappend="${idMarcaActual != null and idMarcaActual == m.idMarca} ? ' active' : ''"
+                   class="wgk-subnav-link">
+                </a>
                 <span class="wgk-subnav-div"></span>
-                <a th:href="@{/carrito/ver}" class="wgk-subnav-link drops">
-                    🔥 Drops
+                <a th:href="@{/carrito/historial}" class="wgk-subnav-link drops">
+                    Historial
                 </a>
                 <div class="wgk-subnav-admin"
                      sec:authorize="hasAnyRole('ROLE_VENDEDOR','ROLE_ADMIN')">
@@ -1354,22 +1248,17 @@
                 </div>
             </div>
         </div>
-
     </header>
 
-    <!-- ════════════════════════════════════
-         FOOTER FRAGMENT
-    ════════════════════════════════════ -->
+    <!-- ════ FOOTER ════ -->
     <footer th:fragment="footer">
-
-        <!-- YouTube section -->
         <div class="wgk-yt">
             <div class="container">
                 <div class="row align-items-center g-5">
                     <div class="col-lg-4">
                         <span style="display:inline-flex;align-items:center;gap:6px;
-                              background:var(--red);color:#fff;font-size:0.6rem;
-                              font-weight:700;letter-spacing:2px;text-transform:uppercase;
+                              background:var(--red);color:#fff;font-size:0.6rem;font-weight:700;
+                              letter-spacing:2px;text-transform:uppercase;
                               padding:5px 12px;margin-bottom:18px;border-radius:3px;">
                             <i class="fab fa-youtube"></i>Canal Oficial
                         </span>
@@ -1380,8 +1269,7 @@
                         </h2>
                         <p style="color:var(--smoke);font-size:0.85rem;line-height:1.7;
                            margin-bottom:22px;max-width:240px;">
-                            Reviews, unboxings y los últimos drops.
-                            Autenticidad garantizada en cada video.
+                            Reviews, unboxings y los últimos drops. Autenticidad garantizada.
                         </p>
                         <a href="https://www.youtube.com/@WeGotKicks"
                            target="_blank" class="wgk-btn-red">
@@ -1390,94 +1278,77 @@
                     </div>
                     <div class="col-lg-8">
                         <div class="wgk-yt-frame">
-                            <iframe
-                                src="https://www.youtube.com/embed/wo1xEagWOtg?start=4"
-                                title="WeGoTKicks PR"
-                                allow="accelerometer; autoplay; clipboard-write;
-                                encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen>
-                            </iframe>
+                            <iframe src="https://www.youtube.com/embed/wo1xEagWOtg?start=4"
+                                    title="WeGoTKicks PR"
+                                    allow="accelerometer; autoplay; clipboard-write;
+                                    encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen></iframe>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Footer grid -->
         <div class="wgk-footer">
             <div class="container">
                 <div class="row g-5">
                     <div class="col-lg-4">
                         <span class="wgk-footer-logo">WGK<em>.</em></span>
                         <p class="wgk-footer-text">
-                            Tienda certificada de sneakers legit.
-                            Autenticidad garantizada en cada par.
+                            Tienda certificada de sneakers legit. Autenticidad garantizada.
                             Puerto Rico's #1 sneaker destination.
                         </p>
                         <div class="wgk-footer-socials">
-                            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-                            <a href="#" title="TikTok"><i class="fab fa-tiktok"></i></a>
-                            <a href="https://www.youtube.com/@WeGotKicks"
-                               target="_blank" title="YouTube">
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-tiktok"></i></a>
+                            <a href="https://www.youtube.com/@WeGotKicks" target="_blank">
                                 <i class="fab fa-youtube"></i>
                             </a>
-                            <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
                         </div>
                     </div>
                     <div class="col-6 col-lg-2">
                         <p class="wgk-footer-heading">Marcas</p>
-                        <a class="wgk-footer-link" th:href="@{/marca/1}">Nike</a>
-                        <a class="wgk-footer-link" th:href="@{/marca/3}">Jordan</a>
-                        <a class="wgk-footer-link" th:href="@{/marca/2}">Adidas</a>
-                        <a class="wgk-footer-link" th:href="@{/marca/4}">New Balance</a>
-                        <a class="wgk-footer-link" th:href="@{/marca/5}">Vans</a>
+                        <a th:each="m : ${marcasNav}"
+                           class="wgk-footer-link"
+                           th:href="@{/marca/{id}(id=${m.idMarca})}">
+                            <i class="fas fa-chevron-right"></i>
+                            <span th:text="${m.descripcion}"></span>
+                        </a>
                     </div>
                     <div class="col-6 col-lg-3">
                         <p class="wgk-footer-heading">Contacto</p>
-                        <span class="wgk-footer-link">
-                            <i class="fas fa-map-marker-alt"></i>Puerto Rico
-                        </span>
-                        <span class="wgk-footer-link">
-                            <i class="fas fa-phone"></i>3244-2144
-                        </span>
-                        <span class="wgk-footer-link">
-                            <i class="fas fa-clock"></i>Lun–Sáb · 2:00 – 10:00pm
-                        </span>
-                        <a href="https://www.youtube.com/@WeGotKicks"
-                           target="_blank" class="wgk-footer-link">
-                            <i class="fab fa-youtube"></i>@WeGotKicks
-                        </a>
+                        <span class="wgk-footer-link"><i class="fas fa-map-marker-alt"></i>Puerto Rico</span>
+                        <span class="wgk-footer-link"><i class="fas fa-phone"></i>3244-2144</span>
+                        <span class="wgk-footer-link"><i class="fas fa-clock"></i>Lun–Sáb · 2:00 – 10:00pm</span>
+                        <a href="https://www.youtube.com/@WeGotKicks" target="_blank" class="wgk-footer-link">
+                            <i class="fab fa-youtube"></i>@WeGotKicks</a>
                     </div>
                     <div class="col-lg-3">
                         <p class="wgk-footer-heading">Legit Check</p>
                         <p style="color:var(--smoke);font-size:0.82rem;line-height:1.7;">
-                            Todos nuestros pares pasan por verificación
-                            de autenticidad antes de llegar a tus manos.
+                            Todos nuestros pares pasan por verificación de autenticidad.
                         </p>
-                        <div style="margin-top:14px;display:inline-flex;align-items:center;
-                             gap:8px;background:rgba(255,0,0,.08);
-                             border:1px solid rgba(255,0,0,.2);
+                        <div style="margin-top:14px;display:inline-flex;align-items:center;gap:8px;
+                             background:rgba(255,0,0,.08);border:1px solid rgba(255,0,0,.2);
                              padding:10px 14px;border-radius:6px;">
                             <i class="fas fa-certificate" style="color:var(--red);"></i>
                             <span style="color:var(--white);font-size:0.7rem;font-weight:700;
-                                  letter-spacing:1px;text-transform:uppercase;">
-                                100% Legit
-                            </span>
+                                  letter-spacing:1px;text-transform:uppercase;">100% Legit</span>
                         </div>
                     </div>
                 </div>
                 <div class="wgk-footer-bottom">
                     <p>&copy; 2026 WegoTKicks PR — Todos los derechos reservados</p>
-                    <p>Hecho con <i class="fas fa-heart"
-                                    style="color:var(--red);font-size:.6rem;"></i> en Puerto Rico</p>
+                    <p>Hecho con <i class="fas fa-heart" style="color:var(--red);font-size:.6rem;"></i> en Puerto Rico</p>
                 </div>
             </div>
         </div>
+
+        <!-- Bootstrap JS aqui al final del body para que los modales funcionen correctamente -->
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
     </footer>
 
-    <!-- ════════════════════════════════════
-         TOAST FRAGMENT
-    ════════════════════════════════════ -->
+    <!-- ════ TOAST ════ -->
     <section th:fragment="mostrarToast">
         <div class="position-fixed top-0 end-0 p-3" style="z-index:1200;">
             <div th:if="${error}" class="toast show align-items-center" role="alert">

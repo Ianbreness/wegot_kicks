@@ -18,36 +18,48 @@ public class SecurityConfig {
     @Autowired
     private CustomOAuth2UserService customOAuth2UserService;
 
-    public static final String[] PUBLIC_URLS = {
-        "/", "/index", "/fav/**", "/carrito/**", "/sneaker/**",
-        "/js/**", "/webjars/**", "/img/**", "/login", "/acceso_denegado",
-        "/registro/**", "/css/**",
-        "/buscar",
-        "/uploads/**",
-        "/marca/**",
-        "/oauth2/**",
-        "/login/oauth2/**"
-    };
-
-    public static final String[] USUARIO_URLS = {
-        "/facturar/carrito"
-    };
-
-    public static final String[] ADMIN_OR_VENDEDOR_URLS = {
-        "/sneaker/listado", "/marca/listado", "/usuario/listado"
-    };
-
-    public static final String[] ADMIN_URLS = {
-        "/usuario/**"
-    };
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request -> request
-                .requestMatchers(PUBLIC_URLS).permitAll()
-                .requestMatchers(USUARIO_URLS).hasRole("USUARIO")
-                .requestMatchers(ADMIN_OR_VENDEDOR_URLS).hasAnyRole("ADMIN", "VENDEDOR")
-                .requestMatchers(ADMIN_URLS).hasRole("ADMIN")
+
+                // ── Rutas de OAuth2 y recursos estáticos — siempre públicas ──
+                .requestMatchers(
+                    "/oauth2/**",
+                    "/login/oauth2/**",
+                    "/webjars/**",
+                    "/img/**",
+                    "/uploads/**",
+                    "/css/**",
+                    "/js/**"
+                ).permitAll()
+
+                // ── Panel admin: solo ADMIN o VENDEDOR ──
+                .requestMatchers(
+                    "/sneaker/listado",
+                    "/sneaker/modificar/**",
+                    "/sneaker/guardar",
+                    "/sneaker/eliminar",
+                    "/marca/listado",
+                    "/marca/modificar/**",
+                    "/marca/guardar",
+                    "/marca/eliminar"
+                ).hasAnyRole("ADMIN", "VENDEDOR")
+
+                // ── Login y páginas públicas ──
+                .requestMatchers(
+                    "/",
+                    "/index",
+                    "/login",
+                    "/acceso_denegado",
+                    "/buscar",
+                    "/marca/**",       // filtro por marca en catálogo público
+                    "/sneaker/**",     // detalle de sneaker público
+                    "/carrito/**",     // carrito público (el pago verifica login internamente)
+                    "/fav/**",
+                    "/registro/**"
+                ).permitAll()
+
+                // ── Cualquier otra URL requiere autenticación ──
                 .anyRequest().authenticated()
 
         ).formLogin(form -> form
@@ -60,7 +72,6 @@ public class SecurityConfig {
         ).oauth2Login(oauth2 -> oauth2
                 .loginPage("/login")
                 .defaultSuccessUrl("/", true)
-                // Usa nuestro servicio que extrae el nombre real de Google
                 .userInfoEndpoint(userInfo -> userInfo
                         .userService(customOAuth2UserService)
                 )

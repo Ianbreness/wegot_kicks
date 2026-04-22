@@ -9,7 +9,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,10 +18,6 @@ public class MarcaService {
 
     @Autowired
     private MarcaRepository marcaRepository;
-
-    // Lee la ruta de carpeta externa desde application.properties
-    @Value("${wgk.imagenes.ruta}")
-    private String rutaImagenes;
 
     @Transactional(readOnly = true)
     public List<Marca> getMarcas(boolean activo) {
@@ -47,18 +42,17 @@ public class MarcaService {
     public void save(Marca marca, MultipartFile imagenFile) throws Exception {
 
         if (imagenFile != null && !imagenFile.isEmpty()) {
-            String nombreArchivo = imagenFile.getOriginalFilename();
+            String nombre = System.currentTimeMillis() + "_" + imagenFile.getOriginalFilename();
 
-            // Crear la carpeta si no existe aún
-            Path carpeta = Paths.get(rutaImagenes);
+            // Carpeta static/img dentro del proyecto
+            Path carpeta = Paths.get("src/main/resources/static/img/");
             Files.createDirectories(carpeta);
 
-            // Copiar el archivo — sobreescribe si ya existe uno con el mismo nombre
-            Path destino = carpeta.resolve(nombreArchivo);
-            Files.copy(imagenFile.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(imagenFile.getInputStream(),
+                       carpeta.resolve(nombre),
+                       StandardCopyOption.REPLACE_EXISTING);
 
-            // Guardar en BD la URL relativa que Spring servirá en /uploads/
-            marca.setRutaImagen("/uploads/" + nombreArchivo);
+            marca.setRutaImagen("/img/" + nombre);
         }
         // Si no se subió archivo, se respeta el valor actual de rutaImagen
 
