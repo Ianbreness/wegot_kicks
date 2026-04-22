@@ -215,8 +215,7 @@
                     </div>
 
                     <form method="post" th:action="@{/sneaker/guardar}"
-                          enctype="multipart/form-data" id="formNuevoSneaker"
-                          onsubmit="limpiarInputsVacios(this)">
+                          id="formNuevoSneaker">
                         <div class="modal-body">
                             <div class="row g-3">
 
@@ -275,30 +274,26 @@
                                               placeholder="Descripción del sneaker..."></textarea>
                                 </div>
 
-                                <!-- Imagen principal -->
+                                <!-- Imagen principal por URL -->
                                 <div class="col-12">
-                                    <label class="wgk-label">Imagen Principal</label>
-                                    <div style="border:2px dashed var(--line);border-radius:8px;
-                                         padding:18px;text-align:center;cursor:pointer;
-                                         transition:border-color .2s;"
-                                         id="dropZoneNuevo"
-                                         onclick="document.getElementById('imgPrincipalNuevo').click()"
-                                         ondragover="event.preventDefault();this.style.borderColor='var(--red)'"
-                                         ondragleave="this.style.borderColor='var(--line)'"
-                                         ondrop="handleDropNuevo(event)">
-                                        <i class="fas fa-cloud-upload-alt"
-                                           style="font-size:1.8rem;color:var(--smoke);display:block;margin-bottom:6px;"></i>
-                                        <p style="color:var(--smoke);font-size:0.8rem;margin:0;">
-                                            Haz clic o arrastra la imagen aquí
-                                        </p>
+                                    <label class="wgk-label">URL de la Imagen</label>
+                                    <div style="display:flex;gap:12px;align-items:flex-start;">
+                                        <div style="flex:1;">
+                                            <input type="text" name="rutaImagen" id="rutaInputNuevo"
+                                                   class="wgk-input"
+                                                   placeholder="https://... o /img/archivo.jpg"
+                                                   oninput="previewNuevo(this.value)"/>
+                                            <p class="wgk-hint">
+                                                Copia la URL de cualquier imagen de Google Images
+                                                (clic derecho → copiar dirección de imagen).
+                                            </p>
+                                        </div>
+                                        <img id="prevNuevo"
+                                             style="display:none;width:90px;height:90px;
+                                             object-fit:contain;flex-shrink:0;
+                                             border-radius:8px;border:2px solid var(--red);
+                                             background:#f4f4f4;padding:4px;"/>
                                     </div>
-                                    <input type="file" name="imagenFile" id="imgPrincipalNuevo"
-                                           accept="image/*" style="display:none;"
-                                           onchange="previewImgNuevo(this)"/>
-                                    <img id="prevNuevo"
-                                         style="display:none;margin-top:10px;max-height:120px;
-                                         border-radius:8px;border:2px solid var(--red);
-                                         object-fit:contain;background:#f4f4f4;padding:6px;"/>
                                 </div>
 
                                 <!-- Fotos adicionales: edita el sneaker después de crearlo para agregar más fotos -->
@@ -344,62 +339,15 @@
                 document.getElementById(inputId).value = seleccionadas.join(',');
             }
 
-            // ── Preview imagen principal ──
-            function previewImgNuevo(input) {
-                const file = input.files[0];
-                if (!file)
-                    return;
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const prev = document.getElementById('prevNuevo');
-                    prev.src = e.target.result;
-                    prev.style.display = 'block';
-                    document.getElementById('dropZoneNuevo').style.borderColor = 'var(--red)';
-                };
-                reader.readAsDataURL(file);
-            }
-
-            function handleDropNuevo(event) {
-                event.preventDefault();
-                const file = event.dataTransfer.files[0];
-                if (!file || !file.type.startsWith('image/'))
-                    return;
-                const input = document.getElementById('imgPrincipalNuevo');
-                const dt = new DataTransfer();
-                dt.items.add(file);
-                input.files = dt.files;
-                previewImgNuevo(input);
-            }
-
-            // ── Preview fotos adicionales ──
-            function previewExtra(input, n, prefix) {
-                const file = input.files[0];
-                if (!file)
-                    return;
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const prev = document.getElementById((prefix || 'nPrev') + n) ||
-                            document.getElementById('nPrev' + n);
-                    if (prev) {
-                        prev.src = e.target.result;
-                        prev.style.display = 'block';
-                    }
-                    const zone = document.getElementById((prefix || 'nDrop') + n) ||
-                            document.getElementById('nDrop' + n);
-                    if (zone)
-                        zone.style.borderColor = 'var(--red)';
-                };
-                reader.readAsDataURL(file);
-            }
-
-            // Elimina inputs file vacíos antes de enviar (fix Tomcat 11)
-            function limpiarInputsVacios(form) {
-                form.querySelectorAll('input[type="file"]').forEach(input => {
-                    if (!input.files || input.files.length === 0) {
-                        input.parentNode.removeChild(input);
-                    }
-                });
-                return true;
+            // Preview URL de imagen en modal nuevo sneaker
+            function previewNuevo(url) {
+                const img = document.getElementById('prevNuevo');
+                if (url && url.trim()) {
+                    img.src = url;
+                    img.style.display = 'block';
+                } else {
+                    img.style.display = 'none';
+                }
             }
 
             // ── Inicializar Bootstrap Modal manualmente como fallback ──
