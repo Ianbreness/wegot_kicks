@@ -3,8 +3,8 @@ package WGK.controller;
 import WGK.domain.Sneaker;
 import WGK.service.MarcaService;
 import WGK.service.SneakerService;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,12 +58,7 @@ public class SneakerController {
         return "redirect:/sneaker/listado";
     }
 
-    // ── DETALLE público ──────────────────────────────────────────────────
-    /**
-     * Muestra la página de detalle de un sneaker.
-     * URL pública: GET /sneaker/detalle/{id}
-     * Se abre en nueva pestaña desde el catálogo.
-     */
+    
     @GetMapping("/detalle/{id}")
     public String detalle(@PathVariable Integer id, Model model) {
         Sneaker sneaker = sneakerService.getSneaker(id);
@@ -71,9 +66,8 @@ public class SneakerController {
             return "redirect:/";
         }
 
-        // Convertir el string de tallas "38,39,40,41,42" en una List<String>
-        // para poder iterar en Thymeleaf con th:each
-        List<String> tallasLista = Collections.emptyList();
+        
+        List<String> tallasLista = new ArrayList<>();
         if (sneaker.getTallas() != null && !sneaker.getTallas().isBlank()) {
             tallasLista = Arrays.stream(sneaker.getTallas().split(","))
                     .map(String::trim)
@@ -83,6 +77,12 @@ public class SneakerController {
 
         model.addAttribute("sneaker", sneaker);
         model.addAttribute("tallasLista", tallasLista);
+        // imagenesLista usa solo la imagen principal como thumbnail
+        List<String> imagenesLista = new ArrayList<>();
+        if (sneaker.getRutaImagen() != null && !sneaker.getRutaImagen().isBlank()) {
+            imagenesLista.add(sneaker.getRutaImagen());
+        }
+        model.addAttribute("imagenesLista", imagenesLista);
         return "/sneaker/detalle";
     }
 }
